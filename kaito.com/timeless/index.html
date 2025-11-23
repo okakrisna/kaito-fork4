@@ -22,43 +22,26 @@
             #preloader.preloader-page { display: none !important; }
             .loading-text { display: none !important; }
 
-            /* Loading overlay to prevent flash of old images */
-            #db-loading-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: #f5f5f5;
-                z-index: 999999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                opacity: 1;
-                transition: opacity 0.5s ease-out;
+            /* Hide all background sections until database content is loaded */
+            /* This prevents flash of old hardcoded images */
+            .background-section-1,
+            .background-section-2,
+            .background-section-3,
+            .background-section-5,
+            .elementor-element-5de39555,
+            .elementor-element-84b6401 {
+                opacity: 0 !important;
+                transition: opacity 0.6s ease-in-out;
             }
-            #db-loading-overlay.fade-out {
-                opacity: 0;
-                pointer-events: none;
-            }
-            .db-spinner {
-                width: 50px;
-                height: 50px;
-                border: 4px solid #e0e0e0;
-                border-top: 4px solid #806f5f;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            .db-loading-text {
-                margin-top: 20px;
-                color: #806f5f;
-                font-family: sans-serif;
-                font-size: 14px;
+
+            /* Show sections after database content is applied */
+            body.db-content-loaded .background-section-1,
+            body.db-content-loaded .background-section-2,
+            body.db-content-loaded .background-section-3,
+            body.db-content-loaded .background-section-5,
+            body.db-content-loaded .elementor-element-5de39555,
+            body.db-content-loaded .elementor-element-84b6401 {
+                opacity: 1 !important;
             }
 
         </style>
@@ -3716,11 +3699,6 @@ i.fas.fa-check-circle {visibility: hidden;}
 		</style>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" /></head>
 <body class="post-template post-template-elementor_canvas single single-post postid-342794 single-format-standard wp-custom-logo wp-embed-responsive theme-hello-elementor woocommerce-no-js hello-elementor-default elementor-default elementor-template-canvas elementor-kit-5 elementor-page elementor-page-342794">
-	<!-- Loading overlay to hide flash of old images -->
-	<div id="db-loading-overlay">
-		<div class="db-spinner"></div>
-		<div class="db-loading-text">Loading content from database...</div>
-	</div>
 	<script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
 
 <script>
@@ -8683,17 +8661,11 @@ function updateContent(data) {
 
   console.log('✅ All content updated from database!');
 
-  // Hide loading overlay after content is loaded
+  // Add class to body to show all sections with smooth fade-in
   setTimeout(function() {
-    var overlay = document.getElementById('db-loading-overlay');
-    if (overlay) {
-      overlay.classList.add('fade-out');
-      setTimeout(function() {
-        overlay.remove();
-      }, 500); // Remove after fade animation
-    }
-    console.log('✅ Loading overlay removed');
-  }, 500); // Small delay to ensure all images are applied
+    document.body.classList.add('db-content-loaded');
+    console.log('✅ Sections visible with new images from database');
+  }, 100); // Small delay to ensure all background styles are applied
 }
         </script>
  		</body>
