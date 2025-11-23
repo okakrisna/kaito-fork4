@@ -8347,53 +8347,62 @@ function updateContent(data) {
   // Update background images - create dynamic CSS to override Elementor styles with higher specificity
   function updateBackgroundImage(elementId, imagePath, sectionClass, bgSize, bgPosition) {
     if (!imagePath) return;
-    
-    // Force browser cache clear for this specific element
-    var cacheBuster = '?t=' + Date.now();
-    
+
+    console.log('🖼️ Updating background for element:', elementId);
+    console.log('Image path type:', imagePath.substring(0, 30) + '...');
+
+    // Check if this is a base64 data URL or regular path
+    var isBase64 = imagePath.startsWith('data:image');
+    var cacheBuster = isBase64 ? '' : ('?t=' + Date.now());
+
     // Force complete removal of old background by setting to transparent first
     var element = document.querySelector('[data-id="' + elementId + '"]');
     if (element) {
+      console.log('✅ Found element with data-id:', elementId);
       // Handle AOS elements properly - don't skip them
       if (element.hasAttribute('data-aos')) {
         // For AOS elements, clear background but preserve animation state
         element.style.backgroundImage = 'none';
         element.style.background = 'transparent';
-        
+
         // Force browser repaint to ensure clean state
         element.offsetHeight;
       } else {
         // For non-AOS elements, use opacity transition
         element.style.backgroundImage = 'none';
         element.style.background = 'transparent';
-        
+
         // Force browser repaint
         element.offsetHeight;
-        
+
         // Now hide element for transition
         element.style.opacity = '0';
         element.style.transition = 'opacity 0.3s ease-in-out';
       }
+    } else {
+      console.warn('❌ Element not found with data-id:', elementId);
     }
-    
+
     // Clear old Elementor CSS first
     clearElementorBackgroundStyles(elementId);
-    
-    // Force browser cache refresh by adding timestamp to all background images
-    var allElements = document.querySelectorAll('[data-id]');
-    allElements.forEach(function(el) {
-      var currentBg = window.getComputedStyle(el).backgroundImage;
-      if (currentBg && currentBg !== 'none') {
-        // Force cache busting on existing backgrounds
-        el.style.backgroundImage = currentBg.replace(/\?t=\d+/, '') + '?t=' + Date.now();
-      }
-    });
-    
+
+    // For non-base64 images, force browser cache refresh
+    if (!isBase64) {
+      var allElements = document.querySelectorAll('[data-id]');
+      allElements.forEach(function(el) {
+        var currentBg = window.getComputedStyle(el).backgroundImage;
+        if (currentBg && currentBg !== 'none' && !currentBg.includes('data:image')) {
+          // Force cache busting on existing backgrounds (but not base64)
+          el.style.backgroundImage = currentBg.replace(/\?t=\d+/, '') + '?t=' + Date.now();
+        }
+      });
+    }
+
     // Default values
     var backgroundSize = bgSize || 'cover';
     var backgroundPosition = bgPosition || 'center center';
-    
-    // Add timestamp to force cache busting
+
+    // Add timestamp to force cache busting (only for regular URLs)
     var imageWithCache = imagePath + cacheBuster;
     
     // Create more specific CSS rules to override Elementor
@@ -8459,13 +8468,29 @@ function updateContent(data) {
     // Also update the data attribute and inline style as backup
     var element = document.querySelector('.' + sectionClass);
     if (element) {
+      console.log('✅ Found element with class:', sectionClass);
       // Remove the old data attribute to prevent Elementor from overriding
       element.removeAttribute('data-dce-background-image-url');
       // Add our new data attribute
       element.setAttribute('data-custom-background', imageWithCache);
-      element.style.backgroundImage = 'url(' + imageWithCache + ')';
-      element.style.backgroundSize = backgroundSize;
-      element.style.backgroundPosition = backgroundPosition;
+      element.style.setProperty('background-image', 'url(' + imageWithCache + ')', 'important');
+      element.style.setProperty('background-size', backgroundSize, 'important');
+      element.style.setProperty('background-position', backgroundPosition, 'important');
+      console.log('✅ Inline style updated for:', sectionClass);
+    } else {
+      console.warn('❌ Element not found with class:', sectionClass);
+    }
+
+    // ALSO update by data-id directly as most reliable method
+    var elementById = document.querySelector('[data-id="' + elementId + '"]');
+    if (elementById) {
+      console.log('✅ Also updating element by data-id:', elementId);
+      elementById.removeAttribute('data-dce-background-image-url');
+      elementById.setAttribute('data-custom-background', imageWithCache);
+      elementById.style.setProperty('background-image', 'url(' + imageWithCache + ')', 'important');
+      elementById.style.setProperty('background-size', backgroundSize, 'important');
+      elementById.style.setProperty('background-position', backgroundPosition, 'important');
+      console.log('✅ Direct element updated successfully!');
     }
     
     // Create a hidden image to preload and ensure smooth transition
