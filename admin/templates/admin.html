@@ -1,0 +1,1304 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Hero Section</title>
+  <style>
+    body { font-family: system-ui; max-width: 900px; margin: 2rem auto; background:#f8f9fa; padding:2rem; border-radius:8px; }
+    label { display:block; margin:.5rem 0 .25rem; font-weight:600; }
+    input, select, textarea { width:100%; padding:.6rem; border:1px solid #ccc; border-radius:4px; }
+    select optgroup { background:#f1f3f4; color:#333; font-weight:600; font-style:normal; }
+    select option { padding:8px 12px; }
+    select option:hover { background:#e3f2fd; }
+    .row { display:flex; gap:1rem; align-items:flex-end; }
+    button { padding:.6rem 1rem; background:#007bff; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    .preview { margin-top:1rem; text-align:center; }
+    .preview img { max-width:300px; max-height:200px; border-radius:6px; margin:5px; object-fit:cover; }
+    .preview video { max-width:300px; max-height:200px; border-radius:6px; }
+    h1 { margin-bottom:1.2rem; }
+    .content-type { background:#e9ecef; padding:1rem; border-radius:6px; margin-bottom:1rem; }
+    .hero-section { background:#e8f4fd; border:2px solid #007bff; }
+    .hero-section h2 { color:#007bff; margin-top:0; }
+  </style>
+</head>
+<body>
+  <h1>🎯 Admin Panel - Multi Page Manager</h1>
+  
+  <!-- PAGE SELECTOR -->
+  <div class="content-type" style="background:#fff3cd; border:2px solid #ffc107;">
+    <h2>📑 Pilih Halaman</h2>
+    <label>Pilih Halaman yang Ingin Dikelola:</label>
+    <select id="page_selector" onchange="changePage()">
+      <option value="">-- Pilih Halaman --</option>
+      {% for page_id, page_info in pages.items() %}
+      <option value="{{ page_id }}">{{ page_info.name }}</option>
+      {% endfor %}
+    </select>
+    <div id="page_info" style="margin-top:10px; font-size:14px; color:#666;"></div>
+  </div>
+
+  <!-- HERO & OVERLAY SECTION -->
+  <div class="content-type hero-section">
+    <h2>🎯 HERO SECTION & OVERLAY</h2>
+    <label>Pilih Konten Hero yang Ingin Diubah:</label>
+    <select id="hero_content_type" onchange="showHeroForm()">
+      <option value="">-- Pilih Konten Hero --</option>
+      
+      <optgroup label="🎯 HERO SECTION">
+        <option value="hero_title">Judul Utama (TES HELLO)</option>
+        <option value="hero_background_image">Background Image Hero</option>
+        <option value="hero_background_video">Background Video Hero</option>
+      </optgroup>
+      
+      <optgroup label="💌 OVERLAY SAPAAN">
+        <option value="greeting_text">Teks Salam (Dear)</option>
+        <option value="guest_name_placeholder">Placeholder Nama Tamu</option>
+        <option value="apology_text">Teks Permintaan Maaf</option>
+        <option value="tombol_buka_text">Teks Tombol Buka Undangan</option>
+      </optgroup>
+      
+      <optgroup label="💒 WEDDING DETAILS">
+        <option value="wedding_title">Judul Wedding (THE WEDDING OF)</option>
+        <option value="bride_name">Nama Mempelai (Oka & Catherine)</option>
+        <option value="wedding_date">Tanggal Pernikahan</option>
+      </optgroup>
+      
+      <optgroup label="🤵 GROOM DETAILS">
+        <option value="groom_full_name">Nama Lengkap Groom</option>
+        <option value="groom_parents">Teks Orang Tua Groom</option>
+        <option value="groom_description">Deskripsi Groom</option>
+        <option value="groom_instagram">Instagram Groom</option>
+        <option value="background_section_2">Background Image Groom</option>
+      </optgroup>
+      
+      <optgroup label="👰 BRIDE DETAILS">
+        <option value="bride_label">Judul Bride (The Bride)</option>
+        <option value="bride_full_name">Nama Lengkap Bride</option>
+        <option value="bride_parents">Teks Orang Tua Bride</option>
+        <option value="bride_description">Deskripsi Bride</option>
+        <option value="bride_instagram">Instagram Bride</option>
+        <option value="background_section_3">Background Image Bride</option>
+      </optgroup>
+      
+      <optgroup label="💕 JOURNEY OF LOVE">
+        <option value="journey_title">Judul Journey (JOURNEY OF LOVE)</option>
+        <option value="journey_content">Konten Journey/Timeline</option>
+      </optgroup>
+      
+      <optgroup label="💒 WEDDING EVENT">
+        <option value="wedding_date_main">Tanggal Acara Utama</option>
+        <option value="holy_matrimony_details">Detail Holy Matrimony</option>
+        <option value="holy_matrimony_address">Alamat Holy Matrimony</option>
+        <option value="holy_matrimony_maps">Link Google Maps Holy Matrimony</option>
+        <option value="wedding_reception_details">Detail Wedding Reception</option>
+        <option value="wedding_reception_address">Alamat Wedding Reception</option>
+        <option value="wedding_reception_maps">Link Google Maps Wedding Reception</option>
+      </optgroup>
+      
+      <optgroup label="⏰ COUNTDOWN & SAVE THE DATE">
+        <option value="countdown_image">Gambar Countdown</option>
+        <option value="countdown_title">Judul Countdown</option>
+        <option value="countdown_date">Tanggal Countdown</option>
+        <option value="countdown_target_date">Tanggal Target Countdown</option>
+        <option value="save_the_date_title">Nama File Save the Date</option>
+        <option value="save_the_date_text">Teks Tombol Save the Date</option>
+      </optgroup>
+      
+      <optgroup label="📺 LIVE STREAMING">
+        <option value="streaming_image">Gambar Background Live Streaming</option>
+        <option value="streaming_title">Judul Live Streaming</option>
+        <option value="streaming_date">Tanggal Live Streaming</option>
+        <option value="streaming_button_text">Teks Tombol Join</option>
+        <option value="streaming_button_link">Link Tombol Join</option>
+      </optgroup>
+      
+      <optgroup label="📸 GALLERY">
+        <option value="prewedding_title">Judul Gallery</option>
+        <option value="gallery_couple_names">Nama Pasangan di Gallery</option>
+        <option value="click_image_text">Teks Klik Gambar</option>
+        <option value="gallery_images">Gambar Gallery (Upload Multiple)</option>
+      </optgroup>
+      
+      <optgroup label="🎬 PREWEDDING STORY">
+        <option value="prewedding_story_title">Judul Prewedding Story</option>
+        <option value="prewedding_video_url">URL Video YouTube</option>
+        <option value="prewedding_video_thumbnail">Thumbnail Video</option>
+        <option value="prewedding_story_text">Quote/Teks Story</option>
+      </optgroup>
+      
+      <optgroup label="🙏 THANK YOU SECTION">
+        <option value="thanks_title">Thank You Title</option>
+        <option value="thanks_text">Thank You Text</option>
+        <option value="thanks_couple_names">Nama Pasangan di Thank You</option>
+        <option value="background_section_5">Background Image Thank You</option>
+      </optgroup>
+      
+      <optgroup label="📱 STICKY HEADER">
+        <option value="sticky_couple_names">Nama Pasangan di Sticky Header</option>
+        <option value="sticky_background_image">Background Sticky Header</option>
+      </optgroup>
+    </select>
+    
+    <div id="hero_form_container" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- ELEGANT EDITABLE SECTION -->
+  <div class="content-type" id="elegant_section" style="background:#e8f5e8; border:2px solid #28a745; display:none;">
+    <h2>🎨 ELEGANT - EDITABLE CONTENT</h2>
+    <p style="color:#666; margin-bottom:1rem;">Edit konten Jimmy & Sherly Wedding Invitation</p>
+    <div style="background:#d4edda; border:1px solid #c3e6cb; padding:10px; border-radius:4px; margin-bottom:1rem;">
+      <strong>💡 Info:</strong> Edit konten Jimmy & Sherly menggunakan form di bawah ini. Untuk melihat hasil, klik link "Lihat Halaman" di atas atau buka <a href="http://localhost:5002/editable" target="_blank">http://localhost:5002/editable</a> di tab baru.
+    </div>
+    
+    <label>Pilih Bagian yang Ingin Diedit:</label>
+    <select id="elegant_content_type" onchange="showElegantForm()">
+      <option value="">-- Pilih Konten --</option>
+      
+      <optgroup label="🎯 HERO SECTION">
+        <option value="page_title">Judul Halaman (Title Tag)</option>
+        <option value="hero_title">Judul Utama Hero</option>
+        <option value="couple_names">Nama Pasangan</option>
+        <option value="wedding_date">Tanggal Pernikahan</option>
+        <option value="open_button">Teks Tombol Open</option>
+        <option value="cover_background">Background Cover</option>
+      </optgroup>
+      
+      <optgroup label="💑 COUPLE SECTION">
+        <option value="couple_section_title">Judul Section Couple</option>
+        <option value="groom_name">Nama Pria</option>
+        <option value="groom_role">Peran Pria</option>
+        <option value="groom_bio">Biografi Pria</option>
+        <option value="groom_parents">Nama Orang Tua Pria</option>
+        <option value="bride_name">Nama Wanita</option>
+        <option value="bride_role">Peran Wanita</option>
+        <option value="bride_bio">Biografi Wanita</option>
+        <option value="bride_parents">Nama Orang Tua Wanita</option>
+      </optgroup>
+      
+      <optgroup label="📅 EVENT SECTION">
+        <option value="event_section_title">Judul Section Event</option>
+        <option value="ceremony_title">Judul Upacara</option>
+        <option value="ceremony_date">Tanggal Upacara</option>
+        <option value="ceremony_time">Waktu Upacara</option>
+        <option value="ceremony_location">Lokasi Upacara</option>
+        <option value="reception_title">Judul Resepsi</option>
+        <option value="reception_date">Tanggal Resepsi</option>
+        <option value="reception_time">Waktu Resepsi</option>
+        <option value="reception_location">Lokasi Resepsi</option>
+      </optgroup>
+      
+      <optgroup label="📸 GALLERY SECTION">
+        <option value="gallery_section_title">Judul Gallery</option>
+        <option value="gallery_image_1">Gambar Gallery 1</option>
+        <option value="gallery_image_2">Gambar Gallery 2</option>
+        <option value="gallery_image_3">Gambar Gallery 3</option>
+      </optgroup>
+      
+      <optgroup label="📝 RSVP SECTION">
+        <option value="rsvp_section_title">Judul RSVP</option>
+        <option value="rsvp_description">Deskripsi RSVP</option>
+        <option value="form_name_label">Label Nama</option>
+        <option value="form_email_label">Label Email</option>
+        <option value="form_guests_label">Label Jumlah Tamu</option>
+        <option value="form_message_label">Label Pesan</option>
+        <option value="form_submit_button">Teks Tombol Submit</option>
+      </optgroup>
+      
+      <optgroup label="📱 FOOTER">
+        <option value="footer_text">Teks Footer</option>
+        <option value="footer_couple">Nama Pasangan di Footer</option>
+        <option value="instagram_link">Link Instagram</option>
+        <option value="facebook_link">Link Facebook</option>
+      </optgroup>
+    </select>
+    
+    <div id="elegant_form_container" style="margin-top:1rem;"></div>
+  </div>
+
+  <script>
+    let currentData = {};
+    
+    // Debug function to check currentData
+    function debugCurrentData() {
+      console.log('=== DEBUG currentData ===');
+      console.log('currentData:', currentData);
+      console.log('currentData type:', typeof currentData);
+      console.log('currentData keys:', Object.keys(currentData));
+      console.log('currentData page_title:', currentData.page_title);
+      console.log('========================');
+    }
+
+    // Load initial data (will be loaded when page is selected)
+    function loadInitialData() {
+      // This will be called after page selection
+      if (currentPage) {
+        loadPageContent(currentPage);
+      }
+    }
+    
+    function saveCountdownDate() {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const countdownDate = document.getElementById('countdown_date_value').value;
+      if (!countdownDate) {
+        alert('Pilih tanggal countdown terlebih dahulu!');
+        return;
+      }
+      
+      const content = {countdown_date: countdownDate};
+      saveContentWithPage(content)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Tanggal countdown berhasil disimpan!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+            currentData.countdown_date = countdownDate;
+          } else {
+            alert('Gagal menyimpan tanggal countdown');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat menyimpan');
+        });
+    }
+
+    // HERO SECTION & OVERLAY FUNCTIONS
+    function showHeroForm() {
+      const type = document.getElementById('hero_content_type').value;
+      const container = document.getElementById('hero_form_container');
+      
+      if (!type) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      
+      switch(type) {
+        case 'hero_title':
+          html = `
+            <label>Judul Utama Hero:</label>
+            <input type="text" id="hero_title_value" value="${currentData.hero_title || 'TES HELLO'}" />
+            <button onclick="saveHeroContent('hero_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'wedding_title':
+          html = `
+            <label>Judul Wedding (THE WEDDING OF):</label>
+            <input type="text" id="wedding_title_value" value="${currentData.wedding_title || 'THE WEDDING OF'}" />
+            <button onclick="saveHeroContent('wedding_title')">Simpan Judul Wedding</button>
+          `;
+          break;
+          
+        case 'bride_name':
+          html = `
+            <label>Nama Mempelai:</label>
+            <input type="text" id="bride_name_value" value="${currentData.bride_name || 'Oka & Catherine'}" />
+            <button onclick="saveHeroContent('bride_name')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'wedding_date':
+          html = `
+            <label>Tanggal Pernikahan:</label>
+            <input type="text" id="wedding_date_value" value="${currentData.wedding_date || 'SATURDAY, 02 MARCH 2024'}" />
+            <button onclick="saveHeroContent('wedding_date')">Simpan Tanggal</button>
+          `;
+          break;
+          
+        case 'hero_background_image':
+          html = `
+            <label>Background Image Hero:</label>
+            <input type="file" id="hero_bg_image_file" accept="image/*" onchange="previewHeroBgImage(this)" />
+            <div id="hero_bg_preview" class="preview"></div>
+            <button onclick="saveHeroBgImage()">Simpan Background Image</button>
+          `;
+          break;
+          
+        case 'hero_background_video':
+          html = `
+            <label>Background Video Hero:</label>
+            <input type="file" id="hero_bg_video_file" accept="video/*" />
+            <button onclick="saveHeroBgVideo()">Simpan Background Video</button>
+          `;
+          break;
+          
+        case 'greeting_text':
+          html = `
+            <label>Teks Salam (Dear):</label>
+            <input type="text" id="greeting_text_value" value="${currentData.greeting_text || 'Dear'}" />
+            <button onclick="saveHeroContent('greeting_text')">Simpan Teks Salam</button>
+          `;
+          break;
+          
+        case 'guest_name_placeholder':
+          html = `
+            <label>Placeholder Nama Tamu:</label>
+            <input type="text" id="guest_name_placeholder_value" value="${currentData.guest_name_placeholder || 'Nama Tamu'}" />
+            <button onclick="saveHeroContent('guest_name_placeholder')">Simpan Placeholder</button>
+          `;
+          break;
+          
+        case 'apology_text':
+          html = `
+            <label>Teks Permintaan Maaf:</label>
+            <textarea id="apology_text_value" rows="3">${currentData.apology_text || 'We apologize if there is any misspelling of name or title'}</textarea>
+            <button onclick="saveHeroContent('apology_text')">Simpan Teks Maaf</button>
+          `;
+          break;
+          
+        case 'tombol_buka_text':
+          html = `
+            <label>Teks Tombol Buka Undangan:</label>
+            <input type="text" id="tombol_buka_text_value" value="${currentData.tombol_buka_text || 'BUKA UNDANGAN'}" />
+            <button onclick="saveHeroContent('tombol_buka_text')">Simpan Teks Tombol</button>
+          `;
+          break;
+          
+        // GROOM DETAILS
+        case 'groom_full_name':
+          html = `
+            <label>Nama Lengkap Groom:</label>
+            <input type="text" id="groom_full_name_value" value="${currentData.groom_full_name || 'Hanson Hartawan'}" />
+            <button onclick="saveHeroContent('groom_full_name')">Simpan Nama Lengkap</button>
+          `;
+          break;
+          
+        case 'groom_parents':
+          html = `
+            <label>Teks Orang Tua Groom:</label>
+            <input type="text" id="groom_parents_value" value="${currentData.groom_parents || 'The Son of'}" />
+            <button onclick="saveHeroContent('groom_parents')">Simpan Teks Orang Tua</button>
+          `;
+          break;
+          
+        case 'groom_description':
+          html = `
+            <label>Deskripsi Groom:</label>
+            <textarea id="groom_description_value" rows="3">${currentData.groom_description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.'}</textarea>
+            <button onclick="saveHeroContent('groom_description')">Simpan Deskripsi</button>
+          `;
+          break;
+          
+        case 'groom_instagram':
+          html = `
+            <label>Instagram Groom:</label>
+            <input type="text" id="groom_instagram_value" value="${currentData.groom_instagram || 'hanson'}" placeholder="username atau https://instagram.com/username" />
+            <small>Contoh: hanson atau https://instagram.com/hanson</small>
+            <button onclick="saveHeroContent('groom_instagram')">Simpan Instagram</button>
+          `;
+          break;
+          
+        case 'background_section_2':
+          html = `
+            <label>Background Image Groom:</label>
+            <input type="file" id="background_section_2_file" accept="image/*" onchange="previewSectionBgImage(this, 'section_2')" />
+            <div id="section_2_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('background_section_2')">Simpan Background</button>
+          `;
+          break;
+          
+        // BRIDE DETAILS
+        case 'bride_label':
+          html = `
+            <label>Judul Bride:</label>
+            <input type="text" id="bride_label_value" value="${currentData.bride_label || 'The Bride'}" />
+            <button onclick="saveHeroContent('bride_label')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'bride_full_name':
+          html = `
+            <label>Nama Lengkap Bride:</label>
+            <input type="text" id="bride_full_name_value" value="${currentData.bride_full_name || 'Catherine Natalie'}" />
+            <button onclick="saveHeroContent('bride_full_name')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'bride_parents':
+          html = `
+            <label>Teks Orang Tua Bride:</label>
+            <input type="text" id="bride_parents_value" value="${currentData.bride_parents || 'The Daughter of'}" />
+            <button onclick="saveHeroContent('bride_parents')">Simpan Teks</button>
+          `;
+          break;
+          
+        case 'bride_description':
+          html = `
+            <label>Deskripsi Bride:</label>
+            <textarea id="bride_description_value" rows="3">${currentData.bride_description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.'}</textarea>
+            <button onclick="saveHeroContent('bride_description')">Simpan Deskripsi</button>
+          `;
+          break;
+          
+        case 'bride_instagram':
+          html = `
+            <label>Instagram Bride:</label>
+            <input type="text" id="bride_instagram_value" value="${currentData.bride_instagram || 'catherine'}" placeholder="username atau https://instagram.com/username" />
+            <small>Contoh: catherine atau https://instagram.com/catherine</small>
+            <button onclick="saveHeroContent('bride_instagram')">Simpan Instagram</button>
+          `;
+          break;
+          
+        case 'background_section_3':
+          html = `
+            <label>Background Image Bride:</label>
+            <input type="file" id="background_section_3_file" accept="image/*" onchange="previewSectionBgImage(this, 'section_3')" />
+            <div id="section_3_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('background_section_3')">Simpan Background</button>
+          `;
+          break;
+          
+        // JOURNEY OF LOVE
+        case 'journey_title':
+          html = `
+            <label>Judul Journey:</label>
+            <input type="text" id="journey_title_value" value="${currentData.journey_title || 'JOURNEY OF LOVE'}" />
+            <button onclick="saveHeroContent('journey_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'journey_content':
+          html = `
+            <label>Konten Journey/Timeline:</label>
+            <textarea id="journey_content_value" rows="8">${currentData.journey_content || 'SEPTEMBER 2021\\nAwal Bertemu, lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nulla facilisi cras fermentum odio eu feugiat pretium nibh ipsum.\\n\\nSEPTEMBER 2022\\nMenjalin Hubungan, facilisis sed odio morbi quis commodo odio. Condimentum mattis pellentesque id nibh tortor id aliquet. Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula ullamcorper. Vestibulum morbi blandit cursus risus.\\n\\nSEPTEMBER 2023\\nBertunangan, magna fermentum iaculis eu non. Pretium lectus quam id leo. Arcu vitae elementum curabitur vitae nunc sed.\\n\\nSEPTEMBER 2024\\nHari Pernikahan, Augue lacus viverra vitae congue eu consequat. Eget nunc scelerisque viverra mauris in aliquam sem fringilla.'}</textarea>
+            <small>Format: Gunakan \\n untuk baris baru, \\n\\n untuk paragraf baru</small>
+            <button onclick="saveHeroContent('journey_content')">Simpan Konten</button>
+          `;
+          break;
+          
+        // WEDDING EVENT
+        case 'wedding_date_main':
+          html = `
+            <label>Tanggal Acara Utama:</label>
+            <input type="text" id="wedding_date_main_value" value="${currentData.wedding_date_main || 'SUNDAY, 28 JULY 2024'}" placeholder="Contoh: SUNDAY, 28 JULY 2024" />
+            <small>Format: HARI, TANGGAL BULAN TAHUN</small>
+            <button onclick="saveHeroContent('wedding_date_main')">Simpan Tanggal</button>
+          `;
+          break;
+          
+        case 'holy_matrimony_details':
+          html = `
+            <label>Detail Holy Matrimony:</label>
+            <textarea id="holy_matrimony_details_value" rows="3">${currentData.holy_matrimony_details || 'Holy Matrimony\\nAt 9.00 - 10.00 AM\\nThe Garden Grille'}</textarea>
+            <small>Format: Judul\\nWaktu\\nLokasi (satu per baris)</small>
+            <button onclick="saveHeroContent('holy_matrimony_details')">Simpan Detail</button>
+          `;
+          break;
+          
+        case 'holy_matrimony_address':
+          html = `
+            <label>Alamat Holy Matrimony:</label>
+            <textarea id="holy_matrimony_address_value" rows="2">${currentData.holy_matrimony_address || 'Jl. Taman Palem Lestari No.1 Blok B 13, Cengkareng Barat, Jakarta, 11730, Indonesia'}</textarea>
+            <button onclick="saveHeroContent('holy_matrimony_address')">Simpan Alamat</button>
+          `;
+          break;
+          
+        case 'holy_matrimony_maps':
+          html = `
+            <label>Link Google Maps Holy Matrimony:</label>
+            <input type="url" id="holy_matrimony_maps_value" value="${currentData.holy_matrimony_maps || 'https://maps.app.goo.gl/eQ7KQhBcJkEZdGDt7'}" placeholder="https://maps.app.goo.gl/..." />
+            <button onclick="saveHeroContent('holy_matrimony_maps')">Simpan Link</button>
+          `;
+          break;
+          
+        case 'wedding_reception_details':
+          html = `
+            <label>Detail Wedding Reception:</label>
+            <textarea id="wedding_reception_details_value" rows="3">${currentData.wedding_reception_details || 'wedding reception\\nAT 12.00 - 2.00 PM\\nThe Garden Grille'}</textarea>
+            <small>Format: Judul\\nWaktu\\nLokasi (satu per baris)</small>
+            <button onclick="saveHeroContent('wedding_reception_details')">Simpan Detail</button>
+          `;
+          break;
+          
+        case 'wedding_reception_address':
+          html = `
+            <label>Alamat Wedding Reception:</label>
+            <textarea id="wedding_reception_address_value" rows="2">${currentData.wedding_reception_address || 'Jl. Taman Palem Lestari No.1 Blok B 13, Cengkareng Barat, Jakarta, 11730, Indonesia'}</textarea>
+            <button onclick="saveHeroContent('wedding_reception_address')">Simpan Alamat</button>
+          `;
+          break;
+          
+        case 'wedding_reception_maps':
+          html = `
+            <label>Link Google Maps Wedding Reception:</label>
+            <input type="url" id="wedding_reception_maps_value" value="${currentData.wedding_reception_maps || 'https://maps.app.goo.gl/eQ7KQhBcJkEZdGDt7'}" placeholder="https://maps.app.goo.gl/..." />
+            <button onclick="saveHeroContent('wedding_reception_maps')">Simpan Link</button>
+          `;
+          break;
+          
+        // COUNTDOWN & SAVE THE DATE
+        case 'countdown_image':
+          html = `
+            <label>Gambar Countdown:</label>
+            <input type="file" id="countdown_image_file" accept="image/*" onchange="previewImage(this, 'countdown_preview')" />
+            <div id="countdown_preview" class="preview"></div>
+            <button onclick="saveCountdownImage()">Simpan Gambar</button>
+          `;
+          break;
+          
+        case 'countdown_title':
+          html = `
+            <label>Judul Countdown:</label>
+            <input type="text" id="countdown_title_value" value="${currentData.countdown_title || 'Almost Time For Our Celebration'}" />
+            <button onclick="saveHeroContent('countdown_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'countdown_target_date':
+          html = `
+            <label>Tanggal Target Countdown:</label>
+            <input type="datetime-local" id="countdown_target_date_value" value="${currentData.countdown_target_date || '2024-12-05T14:30'}" />
+            <small>Format: Tanggal dan Waktu target countdown</small>
+            <button onclick="saveHeroContent('countdown_target_date')">Simpan Tanggal</button>
+          `;
+          break;
+          
+        case 'countdown_date':
+          html = `
+            <label>Tanggal Countdown:</label>
+            <input type="datetime-local" id="countdown_date_value" value="${currentData.countdown_date || '2024-12-05T14:30'}" />
+            <small>Format: Tanggal dan Waktu countdown</small>
+            <button onclick="saveCountdownDate()">Simpan Tanggal</button>
+          `;
+          break;
+          
+        case 'save_the_date_title':
+          html = `
+            <label>Nama File Save the Date:</label>
+            <input type="text" id="save_the_date_title_value" value="${currentData.save_the_date_title || 'Hanson-amp-Catherine'}" placeholder="Nama file tanpa .ics" />
+            <small>Format: Nama file untuk calendar (.ics)</small>
+            <button onclick="saveHeroContent('save_the_date_title')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'save_the_date_text':
+          html = `
+            <label>Teks Tombol Save the Date:</label>
+            <input type="text" id="save_the_date_text_value" value="${currentData.save_the_date_text || 'Save the date'}" />
+            <button onclick="saveHeroContent('save_the_date_text')">Simpan Teks</button>
+          `;
+          break;
+          
+        // LIVE STREAMING
+        case 'streaming_image':
+          html = `
+            <label>Background Image Live Streaming:</label>
+            <input type="file" id="streaming_image_file" accept="image/*" onchange="previewSectionBgImage(this, 'streaming')" />
+            <div id="streaming_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('streaming_image')">Simpan Background</button>
+          `;
+          break;
+          
+        case 'streaming_title':
+          html = `
+            <label>Judul Live Streaming:</label>
+            <input type="text" id="streaming_title_value" value="${currentData.streaming_title || 'JOIN OUR EXCLUSIVE LIVE STREAMING EVENT'}" />
+            <button onclick="saveHeroContent('streaming_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'streaming_date':
+          html = `
+            <label>Tanggal Live Streaming:</label>
+            <input type="text" id="streaming_date_value" value="${currentData.streaming_date || 'SATURDAY, 02 MARCH 2024'}" />
+            <small>Format: HARI, TANGGAL BULAN TAHUN</small>
+            <button onclick="saveHeroContent('streaming_date')">Simpan Tanggal</button>
+          `;
+          break;
+          
+        case 'streaming_button_text':
+          html = `
+            <label>Teks Tombol Join:</label>
+            <input type="text" id="streaming_button_text_value" value="${currentData.streaming_button_text || 'Join Now'}" />
+            <button onclick="saveHeroContent('streaming_button_text')">Simpan Teks</button>
+          `;
+          break;
+          
+        case 'streaming_button_link':
+          html = `
+            <label>Link Tombol Join:</label>
+            <input type="url" id="streaming_button_link_value" value="${currentData.streaming_button_link || ''}" placeholder="https://youtube.com/live/streaming-link" />
+            <small>Contoh: https://youtube.com/live/streaming-link</small>
+            <button onclick="saveHeroContent('streaming_button_link')">Simpan Link</button>
+          `;
+          break;
+          
+        // GALLERY SECTION
+        case 'prewedding_title':
+          html = `
+            <label>Judul Gallery:</label>
+            <input type="text" id="prewedding_title_value" value="${currentData.prewedding_title || 'Our Pre-wedding Celebration'}" />
+            <button onclick="saveHeroContent('prewedding_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'gallery_couple_names':
+          html = `
+            <label>Nama Pasangan di Gallery:</label>
+            <input type="text" id="gallery_couple_names_value" value="${currentData.gallery_couple_names || 'Hanson & Catherine'}" />
+            <button onclick="saveHeroContent('gallery_couple_names')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'click_image_text':
+          html = `
+            <label>Teks Klik Gambar:</label>
+            <input type="text" id="click_image_text_value" value="${currentData.click_image_text || 'Click image for preview'}" />
+            <button onclick="saveHeroContent('click_image_text')">Simpan Teks</button>
+          `;
+          break;
+          
+        case 'gallery_images':
+          html = `
+            <label>Gambar Gallery (Upload Multiple):</label>
+            <input type="file" id="gallery_images_files" accept="image/*" multiple onchange="previewGalleryImages(this)" />
+            <div id="gallery_images_preview" class="preview"></div>
+            <small>Pilih multiple gambar untuk gallery slider</small>
+            <button onclick="saveGalleryImages()">Simpan Gallery</button>
+          `;
+          break;
+          
+        // PREWEDDING STORY SECTION
+        case 'prewedding_story_title':
+          html = `
+            <label>Judul Prewedding Story:</label>
+            <input type="text" id="prewedding_story_title_value" value="${currentData.prewedding_story_title || 'Unveiling Our Prewedding Story'}" />
+            <button onclick="saveHeroContent('prewedding_story_title')">Simpan Judul</button>
+          `;
+          break;
+          
+        case 'prewedding_video_url':
+          html = `
+            <label>URL Video YouTube:</label>
+            <input type="url" id="prewedding_video_url_value" value="${currentData.prewedding_video_url || 'https://www.youtube.com/watch?v=a-kLVfwTZnM'}" placeholder="https://www.youtube.com/watch?v=VIDEO_ID" />
+            <small>Contoh: https://www.youtube.com/watch?v=a-kLVfwTZnM</small>
+            <button onclick="saveHeroContent('prewedding_video_url')">Simpan URL</button>
+          `;
+          break;
+          
+        case 'prewedding_video_thumbnail':
+          html = `
+            <label>Thumbnail Video:</label>
+            <input type="file" id="prewedding_video_thumbnail_file" accept="image/*" onchange="previewSectionBgImage(this, 'prewedding_thumbnail')" />
+            <div id="prewedding_thumbnail_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('prewedding_video_thumbnail')">Simpan Thumbnail</button>
+          `;
+          break;
+          
+        case 'prewedding_story_text':
+          html = `
+            <label>Quote/Teks Story:</label>
+            <textarea id="prewedding_story_text_value" rows="4">${currentData.prewedding_story_text || 'Every love story is beautiful, but ours is my favorite. Through the highs and lows, our love grows stronger and deeper with each passing day.'}</textarea>
+            <button onclick="saveHeroContent('prewedding_story_text')">Simpan Teks</button>
+          `;
+          break;
+          
+        // THANK YOU SECTION
+        case 'thanks_title':
+          html = `
+            <label>Thank You Title:</label>
+            <input type="text" id="thanks_title_value" value="${currentData.thanks_title || 'Thank You For Your Attendance And Support'}" />
+            <button onclick="saveHeroContent('thanks_title')">Simpan Title</button>
+          `;
+          break;
+          
+        case 'thanks_text':
+          html = `
+            <label>Thank You Text:</label>
+            <textarea id="thanks_text_value" rows="3">${currentData.thanks_text || 'It is a pleasure and honor for us, if you are willing to attend and give us your blessing.'}</textarea>
+            <button onclick="saveHeroContent('thanks_text')">Simpan Text</button>
+          `;
+          break;
+          
+        case 'thanks_couple_names':
+          html = `
+            <label>Nama Pasangan di Thank You:</label>
+            <input type="text" id="thanks_couple_names_value" value="${currentData.thanks_couple_names || 'Hanson & Catherine'}" />
+            <button onclick="saveHeroContent('thanks_couple_names')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'background_section_5':
+          html = `
+            <label>Background Image Thank You:</label>
+            <input type="file" id="background_section_5_file" accept="image/*" onchange="previewImage(this, 'background_section_5_preview')">
+            <div id="background_section_5_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('background_section_5')">Simpan Background</button>
+          `;
+          break;
+          
+        // STICKY HEADER SECTION
+        case 'sticky_couple_names':
+          html = `
+            <label>Nama Pasangan di Sticky Header:</label>
+            <input type="text" id="sticky_couple_names_value" value="${currentData.sticky_couple_names || 'Hanson & Catherine'}" />
+            <button onclick="saveHeroContent('sticky_couple_names')">Simpan Nama</button>
+          `;
+          break;
+          
+        case 'sticky_background_image':
+          html = `
+            <label>Background Sticky Header:</label>
+            <input type="file" id="sticky_background_image_file" accept="image/*" onchange="previewImage(this, 'sticky_background_image_preview')">
+            <div id="sticky_background_image_preview" class="preview"></div>
+            <button onclick="saveSectionBgImage('sticky_background_image')">Simpan Background</button>
+          `;
+          break;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    function saveHeroContent(type) {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      let value;
+      const elementId = type + '_value';
+      
+      if (type === 'apology_text') {
+        value = document.getElementById(elementId).value;
+      } else {
+        value = document.getElementById(elementId).value;
+      }
+      
+      const content = {[type]: value};
+      
+      saveContentWithPage(content)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Konten berhasil disimpan!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+            // Update local data
+            Object.assign(currentData, content);
+          } else {
+            alert('Gagal menyimpan konten');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat menyimpan');
+        });
+    }
+    
+    function previewHeroBgImage(input) {
+      const preview = document.getElementById('hero_bg_preview');
+      preview.innerHTML = '';
+      
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `<img src="${e.target.result}" style="max-width:300px; max-height:200px;" />`;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    
+    function saveHeroBgImage() {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById('hero_bg_image_file');
+      if (!fileInput.files[0]) {
+        alert('Pilih file gambar terlebih dahulu!');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('hero_background_image', fileInput.files[0]);
+      formData.append('page', currentPage);  // Add page context
+      
+      fetch('/api/upload-bg', {
+        method: 'POST',
+        body: formData
+      })
+      .then(r => r.json())
+      .then(j => {
+        if (j.ok) {
+          alert('Background image berhasil diupload!\n\nBackground akan terganti di hero section dan section 1.\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+          currentData.hero_background_image = j.url;
+          currentData.background_section_1 = j.url;
+        }
+      });
+    }
+    
+    function saveHeroBgVideo() {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById('hero_bg_video_file');
+      if (!fileInput.files[0]) {
+        alert('Pilih file video terlebih dahulu!');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('hero_background_video', fileInput.files[0]);
+      formData.append('page', currentPage);  // Add page context
+      formData.append('field_name', 'hero_background_video');  // Specify field name
+      
+      fetch('/api/upload-bg', {
+        method: 'POST',
+        body: formData
+      })
+      .then(r => r.json())
+      .then(j => {
+        if (j.ok) {
+          alert('Background video berhasil diupload!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+          currentData.hero_background_video = j.url;
+        }
+      });
+    }
+    
+    function previewSectionBgImage(input, section) {
+      const preview = document.getElementById(section + '_preview');
+      preview.innerHTML = '';
+      
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `<img src="${e.target.result}" style="max-width:300px; max-height:200px;" />`;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    
+    function previewImage(input, previewId) {
+      const preview = document.getElementById(previewId);
+      preview.innerHTML = '';
+      
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `<img src="${e.target.result}" style="max-width:300px; max-height:200px;" />`;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+    
+    function saveSectionBgImage(fieldName) {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById(fieldName + '_file');
+      if (!fileInput.files[0]) {
+        alert('Pilih file gambar terlebih dahulu!');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append(fieldName, fileInput.files[0]);
+      formData.append('page', currentPage);  // Add page context
+      formData.append('field_name', fieldName);  // Specify field name
+      
+      fetch('/api/upload-bg', {
+        method: 'POST',
+        body: formData
+      })
+      .then(r => r.json())
+      .then(j => {
+        if (j.ok) {
+          alert('Background image berhasil diupload!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+          currentData[fieldName] = j.url;
+        }
+      });
+    }
+    
+    function saveCountdownImage() {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById('countdown_image_file');
+      if (!fileInput.files[0]) {
+        alert('Pilih file gambar terlebih dahulu!');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('countdown_image', fileInput.files[0]);
+      formData.append('page', currentPage);  // Add page context
+      formData.append('field_name', 'countdown_image');  // Specify field name
+      
+      fetch('/api/upload-bg', {
+        method: 'POST',
+        body: formData
+      })
+      .then(r => r.json())
+      .then(j => {
+        if (j.ok) {
+          alert('Gambar countdown berhasil diupload!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/' + currentPage + '/');
+          currentData['countdown_image'] = j.url;
+        }
+      });
+    }
+    
+    function previewGalleryImages(input) {
+      const preview = document.getElementById('gallery_images_preview');
+      preview.innerHTML = '';
+      
+      if (input.files) {
+        const files = Array.from(input.files);
+        files.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const imgDiv = document.createElement('div');
+            imgDiv.style.display = 'inline-block';
+            imgDiv.style.margin = '5px';
+            imgDiv.innerHTML = `<img src="${e.target.result}" style="max-width:100px; max-height:100px;" title="Gambar ${index + 1}" />`;
+            preview.appendChild(imgDiv);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    }
+    
+    function saveGalleryImages() {
+      if (!currentPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById('gallery_images_files');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Pilih minimal satu gambar!');
+        return;
+      }
+      
+      const uploadedUrls = [];
+      let uploadedCount = 0;
+      const totalFiles = fileInput.files.length;
+      
+      Array.from(fileInput.files).forEach(file => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('page', currentPage);  // Add page context
+        
+        fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(r => r.json())
+        .then(j => {
+          if (j.ok) {
+            uploadedUrls.push(j.path);
+            uploadedCount++;
+            
+            if (uploadedCount === totalFiles) {
+              // All images uploaded, save to page content
+              saveContentWithPage({gallery_images: uploadedUrls})
+              .then(response => response.json())
+              .then(result => {
+                if (result.success) {
+                  alert(`${totalFiles} gambar gallery berhasil diupload!\n\nUntuk melihat perubahan:\n1. Clear browser cache (Ctrl+F5)\n2. Refresh halaman http://localhost:8000/${currentPage}/`);
+                  currentData.gallery_images = uploadedUrls;
+                }
+              });
+            }
+          }
+        });
+      });
+    }
+    
+    // MULTI-PAGE FUNCTIONS
+    let currentPage = 'timeless';
+    
+    function changePage() {
+      const pageSelector = document.getElementById('page_selector');
+      const selectedPage = pageSelector.value;
+      
+      if (!selectedPage) {
+        alert('Silakan pilih halaman terlebih dahulu');
+        return;
+      }
+      
+      currentPage = selectedPage;
+      loadPageContent(selectedPage);
+      updatePageInfo(selectedPage);
+      
+      // Show/hide elegant section based on selected page
+      const elegantSection = document.getElementById('elegant_section');
+      if (selectedPage === 'elegant') {
+        elegantSection.style.display = 'block';
+      } else {
+        elegantSection.style.display = 'none';
+      }
+    }
+    
+    function loadPageContent(pageId) {
+      // Load content for selected page
+      fetch(`/api/pages/${pageId}/content`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // Update current data with page-specific content
+            currentData = data.content;
+            
+            // Check if this is an external page (like elegant)
+            if (data.page_info && data.page_info.external_link && pageId !== 'elegant') {
+              const externalUrl = data.page_info.external_link;
+              alert(`Opening external page: ${pageId} - Jimmy & Sherly Wedding\nURL: ${externalUrl}`);
+              // Open external link in new tab
+              window.open(externalUrl, '_blank');
+            } else if (pageId === 'elegant' && data.page_info && data.page_info.editable) {
+              // Special handling for elegant - stay in admin panel
+              alert(`✅ Konten ELEGANT (Jimmy & Sherly) berhasil dimuat!\n\nSilakan gunakan form di bawah ini untuk mengedit konten.`);
+              console.log('Elegant editable content loaded:', currentData);
+              console.log('Elegant content keys:', Object.keys(currentData));
+              console.log('First few elegant content:', Object.entries(currentData).slice(0, 3));
+            } else if (data.page_info && data.page_info.editable) {
+              // This is editable content (like kaito2_editable)
+              alert(`Berhasil memuat konten untuk halaman: ${pageId} - Konten dapat diedit`);
+              console.log('Editable content loaded:', currentData);
+            } else {
+              alert(`Berhasil memuat konten untuk halaman: ${pageId}`);
+            }
+          } else {
+            alert('Gagal memuat konten halaman');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading page content:', error);
+          alert(`Error: ${error.message}`);
+        });
+    }
+    
+    function updatePageInfo(pageId) {
+      const pageInfo = document.getElementById('page_info');
+      let viewLink = `/kaito.com/${pageId}/`;
+      
+      // Special handling for elegant
+      if (pageId === 'elegant') {
+        viewLink = 'http://localhost:5002';
+      }
+      
+      pageInfo.innerHTML = `Sedang mengelola: <strong>${pageId}</strong> | 
+        <a href="${viewLink}" target="_blank" style="color:#007bff;">Lihat Halaman →</a>`;
+    }
+    
+    function loadAvailablePages() {
+      // Load available pages from server
+      fetch('/api/pages')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const pageSelector = document.getElementById('page_selector');
+            // Clear existing options except the first one
+            while (pageSelector.options.length > 1) {
+              pageSelector.remove(1);
+            }
+            
+            // Add available pages
+            Object.keys(data.pages).forEach(pageId => {
+              const option = document.createElement('option');
+              option.value = pageId;
+              option.textContent = data.pages[pageId].name || pageId;
+              pageSelector.appendChild(option);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error loading pages:', error);
+        });
+    }
+    
+    // Update save functions to include page context
+    function saveContentWithPage(content) {
+      const payload = {
+        page: currentPage,
+        content: content
+      };
+      
+      return fetch('/api/content', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+    }
+    
+    // ELEGANT EDITABLE FUNCTIONS
+    function showElegantForm() {
+      const type = document.getElementById('elegant_content_type').value;
+      const container = document.getElementById('elegant_form_container');
+      
+      console.log('=== showElegantForm DEBUG ===');
+      console.log('type:', type);
+      console.log('currentData:', currentData);
+      console.log('currentData[type]:', currentData[type]);
+      console.log('window.currentData:', window.currentData);
+      console.log('typeof currentData:', typeof currentData);
+      console.log('currentData keys:', Object.keys(currentData || {}));
+      console.log('==============================');
+      
+      if (!type) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      
+      // Handle different types of elegant content
+      if (type.includes('image') || type.includes('background')) {
+        // Image upload fields - seperti timeless
+        html = `
+          <label>Upload ${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}:</label>
+          <div style="margin-bottom: 1rem;">
+            <input type="file" id="elegant_${type}_file" accept="image/*" onchange="previewImage(this, 'elegant_${type}_preview')" style="margin-bottom: 0.5rem;" />
+            <div id="elegant_${type}_preview" class="preview" style="margin-bottom: 0.5rem;"></div>
+            <small style="color: #666;">atau masukkan URL gambar:</small>
+            <input type="text" id="elegant_${type}_url" placeholder="https://example.com/gambar.jpg" style="margin-top: 0.5rem; margin-bottom: 0.5rem;" />
+          </div>
+          <button onclick="saveElegantImage('${type}')">Simpan Gambar</button>
+        `;
+      } else if (type.includes('bio') || type.includes('location') || type.includes('description')) {
+        // Textarea fields for longer content
+        const fieldValue = currentData[type] || '';
+        console.log(`Rendering textarea for ${type}:`, fieldValue);
+        html = `
+          <label>${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}:</label>
+          <textarea id="elegant_${type}_value" rows="4">${fieldValue}</textarea>
+          <button onclick="saveElegantContent('${type}')">Simpan Konten</button>
+        `;
+      } else {
+        // Regular text fields
+        const fieldValue = currentData[type] || '';
+        console.log(`Rendering input for ${type}:`, fieldValue);
+        html = `
+          <label>${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}:</label>
+          <input type="text" id="elegant_${type}_value" value="${fieldValue}" />
+          <button onclick="saveElegantContent('${type}')">Simpan Konten</button>
+        `;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    function saveElegantContent(type) {
+      if (!currentPage || currentPage !== 'elegant') {
+        alert('Silakan pilih halaman elegant terlebih dahulu');
+        return;
+      }
+      
+      const elementId = `elegant_${type}_value`;
+      const value = document.getElementById(elementId).value;
+      
+      if (!value.trim()) {
+        alert('Isi konten terlebih dahulu!');
+        return;
+      }
+      
+      const content = {};
+      content[type] = value;
+      
+      saveContentWithPage(content)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(`✅ Konten ${type} berhasil disimpan!\n\nUntuk melihat perubahan:\n1. Buka tab baru: http://localhost:5002/editable\n2. Atau klik link "Lihat Halaman" di atas\n3. Refresh browser (Ctrl+F5)`);
+            currentData[type] = value;
+          } else {
+            alert('Gagal menyimpan konten');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat menyimpan');
+        });
+    }
+    
+    function saveElegantImage(type) {
+      if (!currentPage || currentPage !== 'elegant') {
+        alert('Silakan pilih halaman elegant terlebih dahulu');
+        return;
+      }
+      
+      const fileInput = document.getElementById(`elegant_${type}_file`);
+      const urlInput = document.getElementById(`elegant_${type}_url`);
+      
+      // Cek apakah upload file atau URL
+      if (fileInput && fileInput.files[0]) {
+        // Upload file seperti timeless
+        const formData = new FormData();
+        formData.append(type, fileInput.files[0]);
+        formData.append('page', currentPage);
+        formData.append('field_name', type);
+        
+        fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok) {
+            alert(`✅ Gambar ${type} berhasil diupload!\n\nUntuk melihat perubahan:\n1. Buka tab baru: http://localhost:5002/editable\n2. Atau klik link "Lihat Halaman" di atas\n3. Refresh browser (Ctrl+F5)`);
+            currentData[type] = data.path;
+            // Reset form
+            fileInput.value = '';
+            document.getElementById(`elegant_${type}_preview`).innerHTML = '';
+            if (urlInput) urlInput.value = '';
+          } else {
+            alert('Gagal upload gambar: ' + (data.message || 'Unknown error'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Terjadi kesalahan saat mengupload');
+        });
+      } else if (urlInput && urlInput.value.trim()) {
+        // Simpan URL seperti input text biasa
+        const content = {};
+        content[type] = urlInput.value.trim();
+        
+        saveContentWithPage(content)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert(`✅ URL gambar ${type} berhasil disimpan!\n\nUntuk melihat perubahan:\n1. Buka tab baru: http://localhost:5002/editable\n2. Atau klik link "Lihat Halaman" di atas\n3. Refresh browser (Ctrl+F5)`);
+              currentData[type] = urlInput.value.trim();
+              // Reset URL input
+              urlInput.value = '';
+            } else {
+              alert('Gagal menyimpan URL gambar');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menyimpan URL');
+          });
+      } else {
+        alert('Pilih file gambar atau masukkan URL gambar terlebih dahulu!');
+      }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAvailablePages();
+      // Auto-select timeless page
+      setTimeout(() => {
+        document.getElementById('page_selector').value = 'timeless';
+        changePage();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
