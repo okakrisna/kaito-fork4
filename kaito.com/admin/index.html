@@ -396,8 +396,8 @@
 
                     // Set hidden inputs
                     document.getElementById('background_image').value = data.background_image || '';
-                    document.getElementById('groom_photo').value = data.groom_photo || '';
-                    document.getElementById('bride_photo').value = data.bride_photo || '';
+                    document.getElementById('groom_photo').value = data.background_section_2 || data.groom_photo || '';
+                    document.getElementById('bride_photo').value = data.background_section_3 || data.bride_photo || '';
                     document.getElementById('hero_image').value = data.hero_image || '';
                     document.getElementById('thank_you_message').value = data.thank_you_message || '';
 
@@ -405,11 +405,13 @@
                     if (data.background_image) {
                         document.getElementById('background_image_preview').innerHTML = `<img src="${data.background_image}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
                     }
-                    if (data.groom_photo) {
-                        document.getElementById('groom_photo_preview').innerHTML = `<img src="${data.groom_photo}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    if (data.background_section_2 || data.groom_photo) {
+                        const groomPhotoSrc = data.background_section_2 || data.groom_photo;
+                        document.getElementById('groom_photo_preview').innerHTML = `<img src="${groomPhotoSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
                     }
-                    if (data.bride_photo) {
-                        document.getElementById('bride_photo_preview').innerHTML = `<img src="${data.bride_photo}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    if (data.background_section_3 || data.bride_photo) {
+                        const bridePhotoSrc = data.background_section_3 || data.bride_photo;
+                        document.getElementById('bride_photo_preview').innerHTML = `<img src="${bridePhotoSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
                     }
                     if (data.hero_image) {
                         document.getElementById('hero_image_preview').innerHTML = `<img src="${data.hero_image}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
@@ -493,8 +495,8 @@
                     ceremony_time: document.getElementById('ceremony_time').value,
                     reception_time: document.getElementById('reception_time').value,
                     background_image: backgroundImageUrl,
-                    groom_photo: groomPhotoUrl,
-                    bride_photo: bridePhotoUrl,
+                    background_section_2: groomPhotoUrl,
+                    background_section_3: bridePhotoUrl,
                     hero_image: heroImageUrl,
                     thank_you_message: document.getElementById('thank_you_message').value,
                     updated_at: new Date().toISOString()
