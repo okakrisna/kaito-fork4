@@ -571,52 +571,59 @@
                     console.log('No existing data, will create new');
                 }
 
+                // Build data object with only fields that exist in database schema
                 const data = {
-                    ...existingData, // Preserve existing fields
                     couple_names: document.getElementById('couple_names').value,
                     groom_full_name: document.getElementById('groom_full_name').value,
                     bride_full_name: document.getElementById('bride_full_name').value,
                     wedding_title: document.getElementById('wedding_title').value,
-                    hero_title: document.getElementById('wedding_title').value,
                     wedding_date: document.getElementById('wedding_date').value,
-                    wedding_location: document.getElementById('venue_name').value,
                     venue_name: document.getElementById('venue_name').value,
                     venue_address: document.getElementById('venue_address').value,
                     venue_maps: document.getElementById('venue_maps').value,
                     ceremony_time: document.getElementById('ceremony_time').value,
-                    reception_time: document.getElementById('reception_time').value
+                    reception_time: document.getElementById('reception_time').value,
+                    thank_you_message: document.getElementById('thank_you_message').value
                 };
 
-                // Only update image fields if new images were uploaded
+                // Only update image fields if new images were uploaded, otherwise preserve existing
                 if (backgroundImageUrl) {
                     data.background_section_1 = backgroundImageUrl;
+                } else if (existingData.background_section_1) {
+                    data.background_section_1 = existingData.background_section_1;
                 }
+
                 if (groomPhotoUrl) {
                     data.background_section_2 = groomPhotoUrl;
+                } else if (existingData.background_section_2) {
+                    data.background_section_2 = existingData.background_section_2;
                 }
+
                 if (bridePhotoUrl) {
                     data.background_section_3 = bridePhotoUrl;
+                } else if (existingData.background_section_3) {
+                    data.background_section_3 = existingData.background_section_3;
                 }
+
                 if (heroImageUrl) {
                     data.hero_background_image = heroImageUrl;
-                    data.hero_image = heroImageUrl;
+                } else if (existingData.hero_background_image) {
+                    data.hero_background_image = existingData.hero_background_image;
                 }
+
                 if (livestreamingImageUrl) {
                     data.livestreaming_image = livestreamingImageUrl;
-                    data.streaming_image = livestreamingImageUrl;
+                } else if (existingData.livestreaming_image) {
+                    data.livestreaming_image = existingData.livestreaming_image;
                 }
 
-                const thankYouMsg = document.getElementById('thank_you_message').value;
-                if (thankYouMsg) {
-                    data.thank_you_message = thankYouMsg;
-                    data.thanks_text = thankYouMsg;
-                }
-
-                data.updated_at = new Date().toISOString();
-
-                // Add gallery images only if new ones were uploaded
+                // Add gallery images only if new ones were uploaded, otherwise preserve existing
                 if (galleryImagesUrls.length > 0) {
                     data.gallery_images = galleryImagesUrls;
+                } else if (existingData.gallery_images) {
+                    data.gallery_images = existingData.gallery_images;
+                } else {
+                    data.gallery_images = [];
                 }
 
                 // Save to REST API

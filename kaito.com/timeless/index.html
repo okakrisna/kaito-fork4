@@ -8036,10 +8036,17 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        console.log('🚀 Loading from API...');
-        const API_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co/functions/v1/timeless-content';
+        console.log('🚀 Loading from REST API...');
+        const REST_API_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co/rest/v1/timeless_content?limit=1';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZXdpaHN3dmd0Z3p6c2ZhZWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5NzAwNzcsImV4cCI6MjA3OTU0NjA3N30.0OiXAfBDe5qGw8us5i9rjfNR75XdS0RlFojhy_RhKsY';
 
-        const response = await fetch(API_URL);
+        const response = await fetch(REST_API_URL, {
+            headers: {
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'apikey': SUPABASE_ANON_KEY
+            }
+        });
+
         if (!response.ok) {
             console.error('[ERROR] API error:', response.status);
             if (!cachedData) {
@@ -8049,8 +8056,8 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        const result = await response.json();
-        const data = result.data;
+        const results = await response.json();
+        const data = results.length > 0 ? results[0] : null;
 
         if (!data) {
             console.log('[NO DATA] Falling back to JSON file');
@@ -8060,7 +8067,7 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        console.log('✅ Fresh data loaded from API');
+        console.log('✅ Fresh data loaded from REST API');
 
         // Save to cache
         localStorage.setItem(CACHE_KEY, JSON.stringify(data));
