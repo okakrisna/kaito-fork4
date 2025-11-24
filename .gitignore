@@ -18,11 +18,13 @@ kaito.com/elegant/kaito.com/wp-content/uploads/**
 !kaito.com/wp-content/uploads/
 !kaito.com/wp-content/uploads/2024/
 !kaito.com/wp-content/uploads/2024/07/
+!kaito.com/wp-content/uploads/2024/07/**
 !kaito.com/wp-content/uploads/custom/
 !kaito.com/wp-content/uploads/custom/**
 !kaito.com/elegant/kaito.com/wp-content/uploads/
 !kaito.com/elegant/kaito.com/wp-content/uploads/2024/
 !kaito.com/elegant/kaito.com/wp-content/uploads/2024/07/
+!kaito.com/elegant/kaito.com/wp-content/uploads/2024/07/**
 
 # Whitelist: Elegant (default/used)
 !kaito.com/elegant/kaito.com/wp-content/uploads/2024/07/Fotno-Slide-Hitungan-Hari-2-Large-SHERLY-1.jpeg
