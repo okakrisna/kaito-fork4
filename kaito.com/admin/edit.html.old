@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Wedding Project - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #0ea5e9;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .preview-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: white;
+            color: #0ea5e9;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid #0ea5e9;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .preview-link:hover {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div>
+                <h1 id="page-title">✨ Edit Wedding Project</h1>
+                <p class="subtitle" id="page-subtitle">Loading project...</p>
+            </div>
+            <a href="dashboard.html" style="background: #e2e8f0; color: #2d3748; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px;">← Dashboard</a>
+        </div>
+        <div style="background: #d4edda; border: 1px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <strong>✅ Admin Panel Sudah Terintegrasi dengan Database!</strong>
+            <ol style="margin: 10px 0 0 20px; line-height: 1.8;">
+                <li>Isi form dan upload gambar yang ingin diubah</li>
+                <li>Klik tombol "Simpan Semua Perubahan"</li>
+                <li>Data akan otomatis tersimpan ke database Supabase</li>
+                <li>Refresh halaman timeless untuk melihat perubahan terbaru</li>
+            </ol>
+            <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;"><em>💡 Tidak perlu download-upload file lagi! Semua otomatis tersimpan.</em></p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Section: Template Selection -->
+        <div class="section" style="border-left-color: #f59e0b;">
+            <h2>🎨 Template Selection</h2>
+            <div class="form-group">
+                <label>Choose Template</label>
+                <select id="template_name" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                    <option value="timeless">Timeless - Modern & Elegant</option>
+                    <option value="elegant">Elegant - Classic & Sophisticated</option>
+                </select>
+                <p class="help-text">Choose the design template for your wedding invitation</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">
+                <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 16px; text-align: center;">
+                    <strong style="color: #0ea5e9;">Timeless</strong>
+                    <p style="font-size: 12px; color: #666; margin: 8px 0;">Modern design with animated elements</p>
+                    <a href="../timeless/?slug=" id="preview-timeless" target="_blank" style="font-size: 12px; color: #0ea5e9;">Preview →</a>
+                </div>
+                <div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 16px; text-align: center;">
+                    <strong style="color: #8b7355;">Elegant</strong>
+                    <p style="font-size: 12px; color: #666; margin: 8px 0;">Classic design with sophisticated layout</p>
+                    <a href="../elegant/?slug=" id="preview-elegant" target="_blank" style="font-size: 12px; color: #8b7355;">Preview →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Info Pasangan -->
+        <div class="section">
+            <h2>💑 Informasi Pasangan</h2>
+
+            <div class="form-group">
+                <label>Nama Pasangan (tampil di header)</label>
+                <input type="text" id="couple_names" placeholder="Contoh: Hanson & Catherine">
+                <p class="help-text">Nama ini akan tampil di bagian atas undangan</p>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Lengkap Mempelai Pria</label>
+                <input type="text" id="groom_full_name" placeholder="Contoh: Hanson Hartawan">
+            </div>
+
+            <div class="form-group">
+                <label>Nama Lengkap Mempelai Wanita</label>
+                <input type="text" id="bride_full_name" placeholder="Contoh: Catherine Natalie">
+            </div>
+        </div>
+
+        <!-- Section: Judul -->
+        <div class="section">
+            <h2>📝 Judul Undangan</h2>
+
+            <div class="form-group">
+                <label>Judul Utama</label>
+                <input type="text" id="wedding_title" placeholder="Contoh: THE WEDDING OF">
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Pernikahan</label>
+                <input type="text" id="wedding_date" placeholder="Contoh: SATURDAY, 02 MARCH 2024">
+                <p class="help-text">Format: HARI, TANGGAL BULAN TAHUN</p>
+            </div>
+        </div>
+
+        <!-- Section: Lokasi Acara -->
+        <div class="section">
+            <h2>📍 Lokasi Acara</h2>
+
+            <div class="form-group">
+                <label>Nama Tempat</label>
+                <input type="text" id="venue_name" placeholder="Contoh: The Garden Grille">
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Lengkap</label>
+                <textarea id="venue_address" placeholder="Contoh: Jl. Taman Palem Lestari No.1 Blok B 13, Cengkareng Barat, Jakarta, 11730, Indonesia"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Link Google Maps</label>
+                <input type="url" id="venue_maps" placeholder="https://maps.app.goo.gl/...">
+                <p class="help-text">Copy link dari Google Maps</p>
+            </div>
+        </div>
+
+        <!-- Section: Waktu Acara -->
+        <div class="section">
+            <h2>⏰ Waktu Acara</h2>
+
+            <div class="form-group">
+                <label>Waktu Pemberkatan / Akad</label>
+                <input type="text" id="ceremony_time" placeholder="Contoh: 09:00 - 10:00 WIB">
+            </div>
+
+            <div class="form-group">
+                <label>Waktu Resepsi</label>
+                <input type="text" id="reception_time" placeholder="Contoh: 12:00 - 14:00 WIB">
+            </div>
+        </div>
+
+        <!-- Section: Gambar -->
+        <div class="section">
+            <h2>🖼️ Gambar</h2>
+
+            <div class="form-group">
+                <label>Gambar Background Utama</label>
+                <input type="file" id="background_image_file" accept="image/*" onchange="previewImage('background_image_file', 'background_image_preview')">
+                <div id="background_image_preview" style="margin-top: 10px;"></div>
+                <input type="hidden" id="background_image">
+                <p class="help-text">Pilih gambar dari komputer Anda (JPG, PNG, JPEG)</p>
+            </div>
+
+            <div class="form-group">
+                <label>Foto Mempelai Pria</label>
+                <input type="file" id="groom_photo_file" accept="image/*" onchange="previewImage('groom_photo_file', 'groom_photo_preview')">
+                <div id="groom_photo_preview" style="margin-top: 10px;"></div>
+                <input type="hidden" id="groom_photo">
+                <p class="help-text">Pilih foto mempelai pria</p>
+            </div>
+
+            <div class="form-group">
+                <label>Foto Mempelai Wanita</label>
+                <input type="file" id="bride_photo_file" accept="image/*" onchange="previewImage('bride_photo_file', 'bride_photo_preview')">
+                <div id="bride_photo_preview" style="margin-top: 10px;"></div>
+                <input type="hidden" id="bride_photo">
+                <p class="help-text">Pilih foto mempelai wanita</p>
+            </div>
+
+            <div class="form-group">
+                <label>Gambar Hero Section</label>
+                <input type="file" id="hero_image_file" accept="image/*" onchange="previewImage('hero_image_file', 'hero_image_preview')">
+                <div id="hero_image_preview" style="margin-top: 10px;"></div>
+                <input type="hidden" id="hero_image">
+                <p class="help-text">Gambar untuk hero section</p>
+            </div>
+
+            <div class="form-group">
+                <label>Gambar Livestreaming (Couple Photo)</label>
+                <input type="file" id="livestreaming_image_file" accept="image/*" onchange="previewImage('livestreaming_image_file', 'livestreaming_image_preview')">
+                <div id="livestreaming_image_preview" style="margin-top: 10px;"></div>
+                <input type="hidden" id="livestreaming_image">
+                <p class="help-text">Foto pasangan untuk section livestreaming</p>
+            </div>
+
+            <div class="form-group">
+                <label>Gallery Images (Multiple)</label>
+                <input type="file" id="gallery_images_files" accept="image/*" multiple onchange="previewGalleryImages('gallery_images_files', 'gallery_images_preview')">
+                <div id="gallery_images_preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                <p class="help-text">Pilih beberapa gambar untuk gallery (Ctrl+Click atau Shift+Click)</p>
+            </div>
+        </div>
+
+        <!-- Section: Pesan -->
+        <div class="section">
+            <h2>💌 Pesan & Ucapan</h2>
+
+            <div class="form-group">
+                <label>Ucapan Terima Kasih</label>
+                <textarea id="thank_you_message" placeholder="Contoh: It is a pleasure and honor for us, if you are willing to attend and give us your blessing."></textarea>
+            </div>
+        </div>
+
+        <!-- Section: Security & Privacy -->
+        <div class="section" style="border-left-color: #dc2626;">
+            <h2>🔒 Security & Privacy</h2>
+
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="password_protected" style="width: auto; margin: 0;">
+                    Enable Password Protection
+                </label>
+                <p class="help-text">Require guests to enter a password before viewing the invitation</p>
+            </div>
+
+            <div class="form-group" id="password-field" style="display: none;">
+                <label>Invitation Password</label>
+                <input type="text" id="invitation_password" placeholder="Enter password (min 4 characters)">
+                <p class="help-text">⚠️ Make sure to remember this password and share it with your guests</p>
+            </div>
+
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="is_published" checked style="width: auto; margin: 0;">
+                    Publish Invitation
+                </label>
+                <p class="help-text">Uncheck to make invitation temporarily unavailable</p>
+            </div>
+        </div>
+
+        <!-- Section: Analytics & Stats -->
+        <div class="section" style="border-left-color: #10b981;">
+            <h2>📊 Analytics & Statistics</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Total Views</div>
+                    <div style="font-size: 28px; font-weight: 600; color: #0ea5e9;" id="stat-views">0</div>
+                </div>
+                <div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid #e0e0e0;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 4px;">RSVP Count</div>
+                    <div style="font-size: 28px; font-weight: 600; color: #10b981;" id="stat-rsvp">0</div>
+                </div>
+            </div>
+
+            <p style="margin-top: 16px; font-size: 14px; color: #666;">
+                <strong>Last Viewed:</strong> <span id="stat-last-viewed">Never</span>
+            </p>
+        </div>
+
+        <button class="btn" onclick="saveAll()">💾 Simpan Semua Perubahan</button>
+
+        <a href="#" id="preview-link" class="preview-link" target="_blank" style="display:none;">👁️ Preview</a>
+    </div>
+
+    <script>
+        // API Configuration - Using REST API directly
+        const SUPABASE_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZXdpaHN3dmd0Z3p6c2ZhZWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5NzAwNzcsImV4cCI6MjA3OTU0NjA3N30.0OiXAfBDe5qGw8us5i9rjfNR75XdS0RlFojhy_RhKsY';
+        const REST_API_URL = `${SUPABASE_URL}/rest/v1/timeless_content`;
+
+        // Get project ID from URL parameter OR localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let PROJECT_ID = urlParams.get('id');
+
+        console.log('Edit page loaded');
+        console.log('URL parameters:', window.location.search);
+        console.log('PROJECT_ID from URL:', PROJECT_ID);
+
+        if (!PROJECT_ID) {
+            PROJECT_ID = localStorage.getItem('editProjectId');
+            console.log('PROJECT_ID from localStorage:', PROJECT_ID);
+
+            if (PROJECT_ID) {
+                console.log('Using localStorage fallback for project ID');
+                localStorage.removeItem('editProjectId');
+            }
+        }
+
+        let currentProject = null;
+
+        // Preview gambar sebelum upload
+        function previewImage(fileInputId, previewId) {
+            const fileInput = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewId);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        // Preview multiple gallery images
+        function previewGalleryImages(fileInputId, previewId) {
+            const fileInput = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+
+            if (fileInput.files && fileInput.files.length > 0) {
+                Array.from(fileInput.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Convert image to base64 data URL
+        async function convertImageToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Upload gambar - convert to data URL
+        async function uploadImage(file, fieldName) {
+            return await convertImageToDataURL(file);
+        }
+
+        // Upload multiple gallery images
+        async function uploadGalleryImages(files) {
+            const uploadPromises = Array.from(files).map(async (file, index) => {
+                return await convertImageToDataURL(file);
+            });
+            return await Promise.all(uploadPromises);
+        }
+
+        // Load data saat halaman dibuka
+        async function loadData() {
+            try {
+                // Load specific project by ID
+                const response = await fetch(`${REST_API_URL}?id=eq.${PROJECT_ID}&select=*`, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load project: ${response.status}`);
+                }
+
+                const results = await response.json();
+
+                if (!results || results.length === 0) {
+                    alert('❌ Project not found. Redirecting to dashboard...');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                const data = results[0];
+                currentProject = data;
+
+                // Update page subtitle with project info
+                const templateLabel = data.template_name === 'elegant' ? 'Elegant' : 'Timeless';
+                document.getElementById('page-subtitle').innerHTML = `
+                    Editing: <strong>${data.couple_names || 'Unnamed'}</strong>
+                    (${data.slug}) | Template: <strong>${templateLabel}</strong>
+                `;
+
+                // Fill form with data
+                fillFormData(data);
+
+            } catch (error) {
+                console.error('Error loading project:', error);
+                alert('❌ Error loading project. Please try again.');
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Helper function to fill form with data
+        function fillFormData(data) {
+            if (data) {
+                    // Template selection
+                    document.getElementById('template_name').value = data.template_name || 'timeless';
+
+                    // Update preview links with slug
+                    document.getElementById('preview-timeless').href = `../timeless/?slug=${data.slug}`;
+                    document.getElementById('preview-elegant').href = `../elegant/?slug=${data.slug}`;
+
+                    // Security & Privacy
+                    document.getElementById('password_protected').checked = data.password_protected || false;
+                    document.getElementById('invitation_password').value = data.invitation_password || '';
+                    document.getElementById('is_published').checked = data.is_published !== false;
+
+                    // Toggle password field visibility
+                    document.getElementById('password-field').style.display = data.password_protected ? 'block' : 'none';
+
+                    // Analytics
+                    document.getElementById('stat-views').textContent = data.views_count || 0;
+                    document.getElementById('stat-rsvp').textContent = data.rsvp_count || 0;
+                    document.getElementById('stat-last-viewed').textContent = data.last_viewed_at
+                        ? new Date(data.last_viewed_at).toLocaleString()
+                        : 'Never';
+
+                    document.getElementById('couple_names').value = data.couple_names || '';
+                    document.getElementById('groom_full_name').value = data.groom_full_name || '';
+                    document.getElementById('bride_full_name').value = data.bride_full_name || '';
+                    document.getElementById('wedding_title').value = data.wedding_title || data.hero_title || '';
+                    document.getElementById('wedding_date').value = data.wedding_date || '';
+                    document.getElementById('venue_name').value = data.venue_name || data.wedding_location || '';
+                    document.getElementById('venue_address').value = data.venue_address || '';
+                    document.getElementById('venue_maps').value = data.venue_maps || '';
+                    document.getElementById('ceremony_time').value = data.ceremony_time || '';
+                    document.getElementById('reception_time').value = data.reception_time || '';
+                    document.getElementById('thank_you_message').value = data.thank_you_message || data.thanks_text || '';
+
+                    // Set hidden inputs
+                    document.getElementById('background_image').value = data.background_section_1 || data.background_image || '';
+                    document.getElementById('groom_photo').value = data.background_section_2 || data.groom_photo || '';
+                    document.getElementById('bride_photo').value = data.background_section_3 || data.bride_photo || '';
+                    document.getElementById('hero_image').value = data.hero_background_image || data.hero_image || '';
+                    document.getElementById('livestreaming_image').value = data.livestreaming_image || '';
+                    document.getElementById('thank_you_message').value = data.thank_you_message || '';
+
+                    // Show existing images
+                    if (data.background_section_1 || data.background_image) {
+                        const bgImageSrc = data.background_section_1 || data.background_image;
+                        document.getElementById('background_image_preview').innerHTML = `<img src="${bgImageSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    }
+                    if (data.background_section_2 || data.groom_photo) {
+                        const groomPhotoSrc = data.background_section_2 || data.groom_photo;
+                        document.getElementById('groom_photo_preview').innerHTML = `<img src="${groomPhotoSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    }
+                    if (data.background_section_3 || data.bride_photo) {
+                        const bridePhotoSrc = data.background_section_3 || data.bride_photo;
+                        document.getElementById('bride_photo_preview').innerHTML = `<img src="${bridePhotoSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    }
+                    if (data.hero_background_image || data.hero_image) {
+                        const heroImageSrc = data.hero_background_image || data.hero_image;
+                        document.getElementById('hero_image_preview').innerHTML = `<img src="${heroImageSrc}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    }
+                    if (data.livestreaming_image) {
+                        document.getElementById('livestreaming_image_preview').innerHTML = `<img src="${data.livestreaming_image}" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                    }
+                    if (data.gallery_images && data.gallery_images.length > 0) {
+                        const galleryPreview = document.getElementById('gallery_images_preview');
+                        galleryPreview.innerHTML = '';
+                        data.gallery_images.forEach(url => {
+                            const div = document.createElement('div');
+                            div.innerHTML = `<img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">`;
+                            galleryPreview.appendChild(div);
+                        });
+                    }
+
+                    console.log('Data berhasil dimuat!');
+            }
+        }
+
+        // Simpan semua data
+        async function saveAll() {
+            const btn = event.target;
+            btn.classList.add('loading');
+            btn.textContent = '💾 Menyimpan...';
+
+            try {
+                // Upload images if new files are selected
+                const backgroundImageFile = document.getElementById('background_image_file').files[0];
+                const groomPhotoFile = document.getElementById('groom_photo_file').files[0];
+                const bridePhotoFile = document.getElementById('bride_photo_file').files[0];
+                const heroImageFile = document.getElementById('hero_image_file').files[0];
+                const galleryImagesFiles = document.getElementById('gallery_images_files').files;
+
+                let backgroundImageUrl = document.getElementById('background_image').value;
+                let groomPhotoUrl = document.getElementById('groom_photo').value;
+                let bridePhotoUrl = document.getElementById('bride_photo').value;
+                let heroImageUrl = document.getElementById('hero_image').value;
+                let livestreamingImageUrl = document.getElementById('livestreaming_image').value;
+                let galleryImagesUrls = [];
+
+                // Upload background image
+                if (backgroundImageFile) {
+                    btn.textContent = '📤 Mengupload background...';
+                    backgroundImageUrl = await uploadImage(backgroundImageFile, 'background_image');
+                }
+
+                // Upload groom photo
+                if (groomPhotoFile) {
+                    btn.textContent = '📤 Mengupload foto pria...';
+                    groomPhotoUrl = await uploadImage(groomPhotoFile, 'groom_photo');
+                }
+
+                // Upload bride photo
+                if (bridePhotoFile) {
+                    btn.textContent = '📤 Mengupload foto wanita...';
+                    bridePhotoUrl = await uploadImage(bridePhotoFile, 'bride_photo');
+                }
+
+                // Upload hero image
+                if (heroImageFile) {
+                    btn.textContent = '📤 Mengupload hero image...';
+                    heroImageUrl = await uploadImage(heroImageFile, 'hero_image');
+                }
+
+                // Upload livestreaming image
+                const livestreamingImageFile = document.getElementById('livestreaming_image_file').files[0];
+                if (livestreamingImageFile) {
+                    btn.textContent = '📤 Mengupload livestreaming image...';
+                    livestreamingImageUrl = await uploadImage(livestreamingImageFile, 'livestreaming_image');
+                }
+
+                // Upload gallery images
+                if (galleryImagesFiles && galleryImagesFiles.length > 0) {
+                    btn.textContent = `📤 Mengupload ${galleryImagesFiles.length} gambar gallery...`;
+                    galleryImagesUrls = await uploadGalleryImages(galleryImagesFiles);
+                }
+
+                btn.textContent = '💾 Menyimpan data...';
+
+                // Use current project data
+                let existingData = currentProject || {};
+                let existingId = PROJECT_ID;
+
+                // Build data object with only fields that exist in database schema
+                const data = {
+                    template_name: document.getElementById('template_name').value,
+                    couple_names: document.getElementById('couple_names').value,
+                    groom_full_name: document.getElementById('groom_full_name').value,
+                    bride_full_name: document.getElementById('bride_full_name').value,
+                    wedding_title: document.getElementById('wedding_title').value,
+                    wedding_date: document.getElementById('wedding_date').value,
+                    venue_name: document.getElementById('venue_name').value,
+                    venue_address: document.getElementById('venue_address').value,
+                    venue_maps: document.getElementById('venue_maps').value,
+                    ceremony_time: document.getElementById('ceremony_time').value,
+                    reception_time: document.getElementById('reception_time').value,
+                    thank_you_message: document.getElementById('thank_you_message').value,
+                    password_protected: document.getElementById('password_protected').checked,
+                    invitation_password: document.getElementById('invitation_password').value,
+                    is_published: document.getElementById('is_published').checked
+                };
+
+                // Only update image fields if new images were uploaded, otherwise preserve existing
+                if (backgroundImageUrl) {
+                    data.background_section_1 = backgroundImageUrl;
+                } else if (existingData.background_section_1) {
+                    data.background_section_1 = existingData.background_section_1;
+                }
+
+                if (groomPhotoUrl) {
+                    data.background_section_2 = groomPhotoUrl;
+                } else if (existingData.background_section_2) {
+                    data.background_section_2 = existingData.background_section_2;
+                }
+
+                if (bridePhotoUrl) {
+                    data.background_section_3 = bridePhotoUrl;
+                } else if (existingData.background_section_3) {
+                    data.background_section_3 = existingData.background_section_3;
+                }
+
+                if (heroImageUrl) {
+                    data.hero_background_image = heroImageUrl;
+                } else if (existingData.hero_background_image) {
+                    data.hero_background_image = existingData.hero_background_image;
+                }
+
+                if (livestreamingImageUrl) {
+                    data.livestreaming_image = livestreamingImageUrl;
+                } else if (existingData.livestreaming_image) {
+                    data.livestreaming_image = existingData.livestreaming_image;
+                }
+
+                // Add gallery images only if new ones were uploaded, otherwise preserve existing
+                if (galleryImagesUrls.length > 0) {
+                    data.gallery_images = galleryImagesUrls;
+                } else if (existingData.gallery_images) {
+                    data.gallery_images = existingData.gallery_images;
+                } else {
+                    data.gallery_images = [];
+                }
+
+                // Save to REST API
+                let saveResponse;
+                if (existingId) {
+                    // Update existing record
+                    saveResponse = await fetch(`${REST_API_URL}?id=eq.${existingId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Insert new record
+                    saveResponse = await fetch(REST_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (!saveResponse.ok) {
+                    const errorText = await saveResponse.text();
+                    throw new Error(`Failed to save data: ${errorText}`);
+                }
+
+                showAlert('✅ Data berhasil disimpan ke database! Refresh halaman timeless untuk melihat perubahan.', 'success');
+                btn.textContent = '✅ Berhasil Disimpan!';
+
+                // Clear file inputs
+                document.getElementById('background_image_file').value = '';
+                document.getElementById('groom_photo_file').value = '';
+                document.getElementById('bride_photo_file').value = '';
+                document.getElementById('hero_image_file').value = '';
+                document.getElementById('gallery_images_files').value = '';
+
+                setTimeout(() => {
+                    btn.textContent = '💾 Simpan Semua Perubahan';
+                    btn.classList.remove('loading');
+                    // Reload to show updated images
+                    loadData();
+                }, 2000);
+
+            } catch (err) {
+                console.error('Error saving:', err);
+                showAlert('❌ Gagal menyimpan: ' + err.message, 'error');
+                btn.textContent = '💾 Simpan Semua Perubahan';
+                btn.classList.remove('loading');
+            }
+        }
+
+        // Tampilkan alert
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = 'alert ' + type;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load data saat halaman dibuka
+        // Toggle password field visibility
+        function initializePasswordToggle() {
+            const checkbox = document.getElementById('password_protected');
+            const passwordField = document.getElementById('password-field');
+
+            if (checkbox && passwordField) {
+                checkbox.addEventListener('change', function() {
+                    passwordField.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Current URL:', window.location.href);
+            console.log('PROJECT_ID:', PROJECT_ID);
+
+            // Check if PROJECT_ID is provided
+            if (!PROJECT_ID) {
+                const currentUrl = window.location.href;
+                console.error('No project ID in URL:', currentUrl);
+
+                // Show error message with more details
+                document.body.innerHTML = `
+                    <div style="max-width: 600px; margin: 100px auto; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; font-family: system-ui;">
+                        <h1 style="color: #ef4444; margin-bottom: 20px;">❌ Error</h1>
+                        <p style="font-size: 18px; color: #333; margin-bottom: 20px;">
+                            No project ID provided in URL
+                        </p>
+                        <p style="font-size: 14px; color: #666; margin-bottom: 30px;">
+                            This page requires a project ID parameter.<br>
+                            Example: <code>edit.html?id=123</code>
+                        </p>
+                        <a href="dashboard.html" style="display: inline-block; background: #f8fafc; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                            ← Back to Dashboard
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            loadData();
+            initializePasswordToggle();
+        });
+    </script>
+</body>
+</html>
