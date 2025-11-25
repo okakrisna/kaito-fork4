@@ -411,23 +411,23 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <div class="nav-item active" onclick="showSection('basic')">
+            <div class="nav-item active" data-section="basic">
                 <span class="nav-item-icon">📝</span>
                 <span>Basic Information</span>
             </div>
-            <div class="nav-item" onclick="showSection('venue')">
+            <div class="nav-item" data-section="venue">
                 <span class="nav-item-icon">📍</span>
                 <span>Venue Details</span>
             </div>
-            <div class="nav-item" onclick="showSection('photos')">
+            <div class="nav-item" data-section="photos">
                 <span class="nav-item-icon">📸</span>
                 <span>Photos</span>
             </div>
-            <div class="nav-item" onclick="showSection('gallery')">
+            <div class="nav-item" data-section="gallery">
                 <span class="nav-item-icon">🖼️</span>
                 <span>Gallery</span>
             </div>
-            <div class="nav-item" onclick="showSection('settings')">
+            <div class="nav-item" data-section="settings">
                 <span class="nav-item-icon">⚙️</span>
                 <span>Settings</span>
             </div>
@@ -707,25 +707,37 @@
         let currentProject = null;
 
         // Section Navigation
-        function showSection(sectionName) {
+        function showSection(sectionName, clickedElement) {
             // Hide all sections
             document.querySelectorAll('.section-content').forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             // Remove active from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             // Show selected section
             document.getElementById('section-' + sectionName).classList.add('active');
-            
+
             // Set active nav item
-            event.currentTarget.classList.add('active');
-            
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize navigation event listeners
+        function initNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionName = this.getAttribute('data-section');
+                    showSection(sectionName, this);
+                });
+            });
         }
                 reader.readAsDataURL(fileInput.files[0]);
             }
@@ -1135,6 +1147,9 @@
                 `;
                 return;
             }
+
+            // Initialize navigation
+            initNavigation();
 
             loadData();
             initializePasswordToggle();
