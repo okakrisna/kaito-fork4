@@ -299,29 +299,6 @@
             color: white;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            background: white;
-            border-radius: 12px;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h2 {
-            color: #2d3748;
-            margin-bottom: 12px;
-        }
-
-        .empty-state p {
-            color: #718096;
-            margin-bottom: 24px;
-        }
-
         .loading {
             text-align: center;
             padding: 40px;
@@ -411,9 +388,9 @@
                             <a href="../timeless/" target="_blank" class="btn btn-secondary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
                                 👁️ Preview
                             </a>
-                            <a href="edit.html?template=timeless" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                            <button id="edit-btn-timeless" onclick="editTemplateProject('timeless')" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px; cursor: pointer;">
                                 ✏️ Edit
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -429,9 +406,9 @@
                             <a href="../elegant/" target="_blank" class="btn btn-secondary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
                                 👁️ Preview
                             </a>
-                            <a href="edit.html?template=elegant" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                            <button id="edit-btn-elegant" onclick="editTemplateProject('elegant')" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px; cursor: pointer;">
                                 ✏️ Edit
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -495,15 +472,6 @@
         <div id="projects-grid" class="projects-grid" style="display: none;">
             <!-- Projects will be loaded here -->
         </div>
-
-        <div id="empty-state" class="empty-state" style="display: none;">
-            <div class="empty-state-icon">💍</div>
-            <h2>No Wedding Projects Yet</h2>
-            <p>Start creating your first wedding invitation project!</p>
-            <a href="create.html" class="btn btn-primary">
-                ➕ Create Your First Project
-            </a>
-        </div>
     </div>
 
     <script>
@@ -517,7 +485,6 @@
             try {
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('projects-grid').style.display = 'none';
-                document.getElementById('empty-state').style.display = 'none';
 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/timeless_content?select=*&order=created_at.desc`, {
                     headers: {
@@ -545,12 +512,7 @@
                 renderProjects();
 
                 document.getElementById('loading').style.display = 'none';
-
-                if (allProjects.length === 0) {
-                    document.getElementById('empty-state').style.display = 'block';
-                } else {
-                    document.getElementById('projects-grid').style.display = 'grid';
-                }
+                document.getElementById('projects-grid').style.display = 'grid';
 
             } catch (error) {
                 console.error('Error loading projects:', error);
@@ -644,6 +606,39 @@
         function previewProject(slug, template) {
             const templatePath = template === 'elegant' ? '/elegant/' : '/timeless/';
             window.open(`${templatePath}?slug=${slug}`, '_blank');
+        }
+
+        // Edit template project - load project ID from database
+        async function editTemplateProject(templateName) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/timeless_content?select=id&template_name=eq.${templateName}&order=created_at.desc&limit=1`, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load template project');
+                }
+
+                const projects = await response.json();
+
+                if (projects.length === 0) {
+                    alert(`❌ No ${templateName} template project found.\n\nPlease create a project with this template first.`);
+                    return;
+                }
+
+                const projectId = projects[0].id;
+                console.log(`Found ${templateName} project ID:`, projectId);
+
+                localStorage.setItem('editProjectId', projectId);
+                window.location.href = `edit.html?id=${projectId}`;
+
+            } catch (error) {
+                console.error('Error loading template project:', error);
+                alert('❌ Error loading template project. Please try again.');
+            }
         }
 
         // Bulk Operations
