@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Wedding Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,188 +14,411 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             min-height: 100vh;
-        }
-
-        .header {
-            background: white;
-            padding: 20px 40px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .header h1 {
-            color: #2d3748;
-            font-size: 24px;
+        .sidebar {
+            width: 260px;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 100;
         }
 
-        .header-actions {
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
             display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
+        .sidebar-logo span {
+            font-size: 24px;
+        }
+
+        .sidebar-nav {
+            padding: 0 12px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item-icon {
+            font-size: 20px;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .topbar-left h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-secondary {
-            background: #e2e8f0;
-            color: #2d3748;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: #cbd5e0;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .btn-icon {
+            padding: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px;
+            padding: 32px;
+            max-width: 1600px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
         .stat-card {
-            background: white;
+            background: var(--bg-primary);
             padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .stat-card-top {
             display: flex;
-            align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
 
         .stat-icon {
             width: 48px;
             height: 48px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
         }
 
-        .stat-icon.purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stat-icon.green { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
-        .stat-icon.blue { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
-        .stat-icon.orange { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
+        .stat-icon.blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); }
+        .stat-icon.red { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); }
 
-        .stat-content h3 {
-            font-size: 28px;
-            color: #2d3748;
+        .stat-trend {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.up {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .stat-trend.down {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 4px;
+            line-height: 1;
         }
 
-        .stat-content p {
+        .stat-label {
             font-size: 14px;
-            color: #718096;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .controls-card {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .search-box {
             flex: 1;
-            min-width: 250px;
+            min-width: 280px;
             position: relative;
         }
 
         .search-box input {
             width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            padding: 11px 16px 11px 42px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            transition: var(--transition);
         }
 
         .search-box input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
-        .filter-group {
-            display: flex;
-            gap: 10px;
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
         }
 
         select {
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            padding: 11px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 14px;
+            font-family: inherit;
             cursor: pointer;
-            background: white;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: var(--transition);
         }
 
         select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
 
         .project-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            position: relative;
         }
 
         .project-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .project-checkbox-wrapper {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .project-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
         }
 
         .project-thumbnail {
             width: 100%;
-            height: 180px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -201,109 +427,172 @@
             position: relative;
         }
 
-        .project-thumbnail.timeless {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
         .project-thumbnail.elegant {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
         }
 
         .template-badge {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(255,255,255,0.95);
-            padding: 6px 12px;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
         }
 
         .status-badge {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
+            bottom: 16px;
+            left: 16px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
         }
 
         .status-badge.active {
-            background: #48bb78;
+            background: rgba(16, 185, 129, 0.9);
             color: white;
         }
 
         .status-badge.draft {
-            background: #ed8936;
+            background: rgba(245, 158, 11, 0.9);
             color: white;
         }
 
         .status-badge.archived {
-            background: #cbd5e0;
-            color: #2d3748;
+            background: rgba(100, 116, 139, 0.9);
+            color: white;
+        }
+
+        .unpublished-badge {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
         }
 
         .project-content {
             padding: 20px;
         }
 
-        .project-content h3 {
+        .project-header {
+            margin-bottom: 16px;
+        }
+
+        .project-title {
             font-size: 18px;
-            color: #2d3748;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 8px;
+            line-height: 1.3;
         }
 
         .project-meta {
             display: flex;
             gap: 16px;
-            margin-bottom: 16px;
+            flex-wrap: wrap;
             font-size: 13px;
-            color: #718096;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .project-meta span {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .project-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 40px;
             gap: 8px;
             padding-top: 16px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-light);
         }
 
         .btn-sm {
-            padding: 8px 16px;
+            padding: 9px 14px;
             font-size: 13px;
-            flex: 1;
+            font-weight: 600;
         }
 
         .btn-edit {
-            background: #667eea;
+            background: var(--primary);
             color: white;
+        }
+
+        .btn-edit:hover {
+            background: var(--primary-dark);
         }
 
         .btn-preview {
-            background: #e2e8f0;
-            color: #2d3748;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-preview:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .btn-delete {
-            background: #fc8181;
-            color: white;
+            background: var(--bg-tertiary);
+            color: var(--danger);
+            padding: 9px;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        .bulk-toolbar {
+            background: var(--bg-primary);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            border: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .bulk-info {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .empty-state {
             text-align: center;
             padding: 80px 20px;
-            background: white;
-            border-radius: 12px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
         }
 
         .empty-state-icon {
@@ -313,27 +602,49 @@
         }
 
         .empty-state h2 {
-            color: #2d3748;
+            color: var(--text-primary);
             margin-bottom: 12px;
+            font-size: 24px;
         }
 
         .empty-state p {
-            color: #718096;
+            color: var(--text-secondary);
             margin-bottom: 24px;
+            font-size: 16px;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 80px;
             font-size: 16px;
-            color: #718096;
+            color: var(--text-secondary);
         }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 16px 20px;
             }
 
             .container {
@@ -341,134 +652,181 @@
             }
 
             .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
 
             .projects-grid {
                 grid-template-columns: 1fr;
             }
+
+            .controls-row {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .bulk-toolbar {
+                flex-direction: column;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎊 Wedding Projects Dashboard</h1>
-        <div class="header-actions">
-            <a href="orders.html" class="btn btn-secondary">
-                📋 Orders
-            </a>
-            <a href="analytics.html" class="btn btn-secondary">
-                📊 Analytics
-            </a>
-            <button class="btn btn-secondary" onclick="refreshData()">
-                🔄 Refresh
-            </button>
-            <a href="create.html" class="btn btn-primary">
-                ➕ Create New Wedding
-            </a>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1><span>💍</span> Kaito Wedding</h1>
         </div>
-    </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-item-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="create.html" class="nav-item">
+                    <span class="nav-item-icon">➕</span>
+                    <span>Create Project</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Manage</div>
+                <a href="orders.html" class="nav-item">
+                    <span class="nav-item-icon">📋</span>
+                    <span>Orders</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-item-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
 
-    <div class="container">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon purple">📊</div>
-                <div class="stat-content">
-                    <h3 id="stat-total">0</h3>
-                    <p>Total Projects</p>
-                </div>
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Dashboard</h2>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon green">✅</div>
-                <div class="stat-content">
-                    <h3 id="stat-active">0</h3>
-                    <p>Active Projects</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon blue">👁️</div>
-                <div class="stat-content">
-                    <h3 id="stat-views">0</h3>
-                    <p>Total Views</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon orange">📝</div>
-                <div class="stat-content">
-                    <h3 id="stat-drafts">0</h3>
-                    <p>Draft Projects</p>
-                </div>
+            <div class="topbar-right">
+                <button class="btn btn-secondary btn-icon" onclick="refreshData()" title="Refresh">
+                    🔄
+                </button>
+                <a href="create.html" class="btn btn-primary">
+                    ➕ Create New
+                </a>
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="search" placeholder="🔍 Search by couple names...">
-            </div>
-            <div class="filter-group">
-                <select id="filter-template">
-                    <option value="">All Templates</option>
-                    <option value="timeless">Timeless</option>
-                    <option value="elegant">Elegant</option>
-                </select>
-                <select id="filter-status">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="draft">Draft</option>
-                    <option value="archived">Archived</option>
-                </select>
-                <select id="sort-by">
-                    <option value="created_desc">Newest First</option>
-                    <option value="created_asc">Oldest First</option>
-                    <option value="views_desc">Most Views</option>
-                    <option value="name_asc">Name A-Z</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Bulk Operations Toolbar -->
-        <div id="bulk-toolbar" style="display: none; background: #f7fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #e2e8f0;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong><span id="selected-count">0</span> projects selected</strong>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon blue">📊</div>
+                        <div class="stat-trend up">↗ 12%</div>
+                    </div>
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Projects</div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="bulkPublish()" style="background: #10b981; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
-                        ✅ Publish
-                    </button>
-                    <button onclick="bulkUnpublish()" style="background: #f59e0b; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
-                        ⏸️ Unpublish
-                    </button>
-                    <button onclick="bulkDelete()" style="background: #ef4444; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
-                        🗑️ Delete
-                    </button>
-                    <button onclick="clearSelection()" style="background: #6b7280; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
-                        ❌ Clear
-                    </button>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-trend up">↗ 8%</div>
+                    </div>
+                    <div class="stat-value" id="stat-active">0</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon orange">👁️</div>
+                        <div class="stat-trend up">↗ 24%</div>
+                    </div>
+                    <div class="stat-value" id="stat-views">0</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon red">📝</div>
+                        <div class="stat-trend down">↘ 3%</div>
+                    </div>
+                    <div class="stat-value" id="stat-drafts">0</div>
+                    <div class="stat-label">Draft Projects</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Projects Grid -->
-        <div id="loading" class="loading">
-            ⏳ Loading projects...
-        </div>
+            <div class="section">
+                <div class="controls-card">
+                    <div class="controls-row">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="search" placeholder="Search by couple names...">
+                        </div>
+                        <select id="filter-template">
+                            <option value="">All Templates</option>
+                            <option value="timeless">Timeless</option>
+                            <option value="elegant">Elegant</option>
+                        </select>
+                        <select id="filter-status">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                        <select id="sort-by">
+                            <option value="created_desc">Newest First</option>
+                            <option value="created_asc">Oldest First</option>
+                            <option value="views_desc">Most Views</option>
+                            <option value="name_asc">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
 
-        <div id="projects-grid" class="projects-grid" style="display: none;">
-            <!-- Projects will be loaded here -->
-        </div>
+                <div id="bulk-toolbar" class="bulk-toolbar" style="display: none;">
+                    <div class="bulk-info">
+                        <span id="selected-count">0</span> projects selected
+                    </div>
+                    <div class="bulk-actions">
+                        <button onclick="bulkPublish()" class="btn btn-sm" style="background: var(--secondary); color: white;">
+                            ✅ Publish
+                        </button>
+                        <button onclick="bulkUnpublish()" class="btn btn-sm" style="background: var(--accent); color: white;">
+                            ⏸️ Unpublish
+                        </button>
+                        <button onclick="bulkDelete()" class="btn btn-sm" style="background: var(--danger); color: white;">
+                            🗑️ Delete
+                        </button>
+                        <button onclick="clearSelection()" class="btn btn-sm btn-secondary">
+                            ❌ Clear
+                        </button>
+                    </div>
+                </div>
 
-        <div id="empty-state" class="empty-state" style="display: none;">
-            <div class="empty-state-icon">💍</div>
-            <h2>No Wedding Projects Yet</h2>
-            <p>Start creating your first wedding invitation project!</p>
-            <a href="create.html" class="btn btn-primary">
-                ➕ Create Your First Project
-            </a>
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading projects...</p>
+                </div>
+
+                <div id="projects-grid" class="projects-grid" style="display: none;"></div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">💍</div>
+                    <h2>No Projects Yet</h2>
+                    <p>Start creating your first wedding invitation project!</p>
+                    <a href="create.html" class="btn btn-primary">
+                        ➕ Create Your First Project
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
         const SUPABASE_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co';
@@ -490,20 +848,10 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to load projects');
-                }
+                if (!response.ok) throw new Error('Failed to load projects');
 
                 allProjects = await response.json();
                 filteredProjects = allProjects;
-
-                console.log('Projects loaded:', allProjects.length);
-                console.log('First project sample:', allProjects[0]);
-                allProjects.forEach((p, i) => {
-                    if (!p.id) {
-                        console.error(`Project ${i} missing ID:`, p);
-                    }
-                });
 
                 updateStats();
                 renderProjects();
@@ -515,11 +863,11 @@
                 } else {
                     document.getElementById('projects-grid').style.display = 'grid';
                 }
-
             } catch (error) {
                 console.error('Error loading projects:', error);
                 document.getElementById('loading').innerHTML = `
-                    <p style="color: #fc8181;">❌ Error loading projects. Please refresh the page.</p>
+                    <div class="spinner"></div>
+                    <p style="color: var(--danger);">Error loading projects. Please refresh the page.</p>
                 `;
             }
         }
@@ -541,7 +889,7 @@
 
             if (filteredProjects.length === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #718096;">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
                         No projects found matching your filters.
                     </div>
                 `;
@@ -550,23 +898,24 @@
 
             grid.innerHTML = filteredProjects.map(project => `
                 <div class="project-card">
-                    <div style="position: absolute; top: 12px; left: 12px; z-index: 10;">
+                    <div class="project-checkbox-wrapper">
                         <input type="checkbox" class="project-checkbox" data-project-id="${project.id}"
-                               style="width: 20px; height: 20px; cursor: pointer;"
                                onchange="updateSelection()">
                     </div>
                     <div class="project-thumbnail ${project.template_name || 'timeless'}">
                         <div class="template-badge">${(project.template_name || 'timeless').toUpperCase()}</div>
                         <div class="status-badge ${project.status || 'draft'}">${project.status || 'draft'}</div>
                         ${project.password_protected ? '🔒' : '💍'}
-                        ${!project.is_published ? '<div style="position: absolute; bottom: 8px; right: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">UNPUBLISHED</div>' : ''}
+                        ${!project.is_published ? '<div class="unpublished-badge">UNPUBLISHED</div>' : ''}
                     </div>
                     <div class="project-content">
-                        <h3>${project.couple_names || 'Untitled Wedding'}</h3>
-                        <div class="project-meta">
-                            <span>📅 ${project.wedding_date || 'No date'}</span>
-                            <span>👁️ ${project.views_count || 0} views</span>
-                            ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
+                        <div class="project-header">
+                            <h3 class="project-title">${project.couple_names || 'Untitled Wedding'}</h3>
+                            <div class="project-meta">
+                                <span>📅 ${project.wedding_date || 'No date'}</span>
+                                <span>👁️ ${project.views_count || 0}</span>
+                                ${project.rsvp_count ? `<span>💌 ${project.rsvp_count}</span>` : ''}
+                            </div>
                         </div>
                         <div class="project-actions">
                             <button class="btn btn-sm btn-edit" onclick="editProject('${project.id}')">
@@ -585,24 +934,12 @@
         }
 
         function editProject(id) {
-            console.log('editProject called with ID:', id);
-            console.log('ID type:', typeof id);
-            console.log('ID is valid:', id && id !== 'undefined' && id !== 'null');
-
             if (!id || id === 'undefined' || id === 'null') {
-                alert('❌ Error: Invalid project ID\n\nProject ID is: ' + id + '\n\nPlease reload the dashboard and try again.');
-                console.error('Invalid project ID:', id);
+                alert('Error: Invalid project ID');
                 return;
             }
-
-            console.log('Storing project ID in localStorage:', id);
             localStorage.setItem('editProjectId', id);
-
-            const url = `edit.html?id=${id}`;
-            console.log('Navigating to:', url);
-            console.log('Full URL:', new URL(url, window.location.href).href);
-
-            window.location.href = url;
+            window.location.href = `edit.html?id=${id}`;
         }
 
         function previewProject(slug, template) {
@@ -610,16 +947,14 @@
             window.open(`${templatePath}?slug=${slug}`, '_blank');
         }
 
-        // Bulk Operations
         let selectedProjects = new Set();
 
         function updateSelection() {
             const checkboxes = document.querySelectorAll('.project-checkbox:checked');
             selectedProjects = new Set(Array.from(checkboxes).map(cb => cb.dataset.projectId));
-
             const count = selectedProjects.size;
             document.getElementById('selected-count').textContent = count;
-            document.getElementById('bulk-toolbar').style.display = count > 0 ? 'block' : 'none';
+            document.getElementById('bulk-toolbar').style.display = count > 0 ? 'flex' : 'none';
         }
 
         function clearSelection() {
@@ -629,7 +964,6 @@
 
         async function bulkPublish() {
             if (selectedProjects.size === 0) return;
-
             if (!confirm(`Publish ${selectedProjects.size} project(s)?`)) return;
 
             try {
@@ -645,7 +979,6 @@
                         body: JSON.stringify({ is_published: true })
                     });
                 }
-
                 alert(`✅ Successfully published ${selectedProjects.size} project(s)!`);
                 clearSelection();
                 loadProjects();
@@ -656,7 +989,6 @@
 
         async function bulkUnpublish() {
             if (selectedProjects.size === 0) return;
-
             if (!confirm(`Unpublish ${selectedProjects.size} project(s)?`)) return;
 
             try {
@@ -672,7 +1004,6 @@
                         body: JSON.stringify({ is_published: false })
                     });
                 }
-
                 alert(`✅ Successfully unpublished ${selectedProjects.size} project(s)!`);
                 clearSelection();
                 loadProjects();
@@ -683,10 +1014,7 @@
 
         async function bulkDelete() {
             if (selectedProjects.size === 0) return;
-
             if (!confirm(`⚠️ DELETE ${selectedProjects.size} project(s)?\n\nThis action CANNOT be undone!`)) return;
-
-            if (!confirm(`Are you absolutely sure? Type YES to confirm.`)) return;
 
             try {
                 for (const projectId of selectedProjects) {
@@ -698,7 +1026,6 @@
                         }
                     });
                 }
-
                 alert(`✅ Successfully deleted ${selectedProjects.size} project(s)!`);
                 clearSelection();
                 loadProjects();
@@ -708,9 +1035,7 @@
         }
 
         async function deleteProject(id, name) {
-            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
-                return;
-            }
+            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) return;
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/timeless_content?id=eq.${id}`, {
@@ -721,13 +1046,10 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to delete project');
-                }
+                if (!response.ok) throw new Error('Failed to delete project');
 
                 alert('✅ Project deleted successfully!');
                 loadProjects();
-
             } catch (error) {
                 console.error('Error deleting project:', error);
                 alert('❌ Error deleting project. Please try again.');
@@ -740,7 +1062,6 @@
             const statusFilter = document.getElementById('filter-status').value;
             const sortBy = document.getElementById('sort-by').value;
 
-            // Filter
             filteredProjects = allProjects.filter(project => {
                 const matchSearch = !search || (project.couple_names || '').toLowerCase().includes(search);
                 const matchTemplate = !templateFilter || project.template_name === templateFilter;
@@ -748,7 +1069,6 @@
                 return matchSearch && matchTemplate && matchStatus;
             });
 
-            // Sort
             filteredProjects.sort((a, b) => {
                 switch(sortBy) {
                     case 'created_desc':
@@ -771,13 +1091,11 @@
             loadProjects();
         }
 
-        // Event listeners
         document.getElementById('search').addEventListener('input', applyFilters);
         document.getElementById('filter-template').addEventListener('change', applyFilters);
         document.getElementById('filter-status').addEventListener('change', applyFilters);
         document.getElementById('sort-by').addEventListener('change', applyFilters);
 
-        // Load on page load
         window.addEventListener('DOMContentLoaded', loadProjects);
     </script>
 </body>
