@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Wedding - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,24 +14,123 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-nav {
+            padding: 0 12px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
             min-height: 100vh;
         }
 
-        .header {
-            background: white;
-            padding: 20px 40px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        .topbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .breadcrumb {
@@ -36,69 +138,95 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: #718096;
+            color: var(--text-secondary);
         }
 
         .breadcrumb a {
-            color: #667eea;
+            color: var(--primary);
             text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 40px;
+            padding: 40px 32px;
         }
 
         .steps {
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 48px;
             margin-bottom: 40px;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: var(--border);
+            z-index: -1;
         }
 
         .step {
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 12px;
-            color: #cbd5e0;
+            color: var(--text-muted);
             font-weight: 500;
+            font-size: 14px;
         }
 
         .step.active {
-            color: #667eea;
+            color: var(--primary);
         }
 
         .step.completed {
-            color: #48bb78;
+            color: var(--secondary);
         }
 
         .step-number {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #e2e8f0;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 16px;
+            transition: var(--transition);
         }
 
         .step.active .step-number {
-            background: #667eea;
+            background: var(--primary);
             color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
         }
 
         .step.completed .step-number {
-            background: #48bb78;
+            background: var(--secondary);
             color: white;
+            border-color: var(--secondary);
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 40px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 48px;
+            border: 1px solid var(--border);
         }
 
         .step-content {
@@ -107,17 +235,31 @@
 
         .step-content.active {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h2 {
-            color: #2d3748;
-            font-size: 24px;
-            margin-bottom: 12px;
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            color: #718096;
+            color: var(--text-secondary);
             margin-bottom: 32px;
+            font-size: 15px;
         }
 
         .template-grid {
@@ -128,61 +270,78 @@
         }
 
         .template-card {
-            border: 3px solid #e2e8f0;
-            border-radius: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
+            background: var(--bg-primary);
         }
 
-        .template-card:hover {
-            border-color: #667eea;
+        .template-card:hover:not(.disabled) {
+            border-color: var(--primary);
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-lg);
         }
 
         .template-card.selected {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+        .template-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .template-preview {
-            height: 200px;
+            height: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
+            font-size: 56px;
             position: relative;
         }
 
         .template-preview.timeless {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         }
 
         .template-preview.elegant {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
         }
 
         .template-preview.classic {
-            background: linear-gradient(135deg, #3b8d99 0%, #6b6b83 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
         }
 
         .check-mark {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
             background: white;
             border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
+            box-shadow: var(--shadow);
         }
 
         .template-card.selected .check-mark {
             display: flex;
+            animation: scaleIn 0.2s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
         }
 
         .template-info {
@@ -190,15 +349,16 @@
         }
 
         .template-info h3 {
-            color: #2d3748;
+            color: var(--text-primary);
             font-size: 18px;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
         .template-info p {
-            color: #718096;
+            color: var(--text-secondary);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .form-group {
@@ -208,9 +368,13 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #2d3748;
-            font-weight: 500;
+            color: var(--text-primary);
+            font-weight: 600;
             font-size: 14px;
+        }
+
+        label .required {
+            color: var(--danger);
         }
 
         input[type="text"],
@@ -218,17 +382,21 @@
         select {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 14px;
-            transition: all 0.3s;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: var(--transition);
         }
 
         input:focus,
         select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
         .form-row {
@@ -237,80 +405,167 @@
             gap: 20px;
         }
 
-        .actions {
-            display: flex;
-            gap: 12px;
-            justify-content: space-between;
-            margin-top: 32px;
-            padding-top: 32px;
-            border-top: 2px solid #e2e8f0;
+        .form-hint {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 6px;
+            display: block;
         }
 
-        .btn {
-            padding: 12px 24px;
+        .slug-preview {
+            background: var(--bg-tertiary);
+            padding: 10px 14px;
             border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
+            margin-top: 8px;
+            font-size: 13px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: var(--primary);
+            display: flex;
             align-items: center;
             gap: 8px;
         }
 
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             color: white;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-secondary {
-            background: #e2e8f0;
-            color: #2d3748;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: #cbd5e0;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
         .alert {
-            padding: 16px;
-            border-radius: 8px;
+            padding: 16px 20px;
+            border-radius: 10px;
             margin-bottom: 24px;
             display: none;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .alert.success {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 1px solid #48bb78;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid var(--secondary);
         }
 
         .alert.error {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 1px solid #fc8181;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid var(--danger);
+        }
+
+        .review-card {
+            background: var(--bg-tertiary);
+            padding: 28px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+        }
+
+        .review-card h3 {
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .review-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .review-value.url {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 24px 20px;
+            }
+
+            .card {
+                padding: 32px 24px;
             }
 
             .steps {
-                gap: 20px;
+                gap: 24px;
                 font-size: 12px;
+            }
+
+            .step-number {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
             }
 
             .template-grid {
@@ -320,187 +575,219 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            h2 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h1><span>💍</span> Kaito Wedding</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="create.html" class="nav-item active">
+                    <span>➕</span>
+                    <span>Create Project</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Manage</div>
+                <a href="orders.html" class="nav-item">
+                    <span>📋</span>
+                    <span>Orders</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span>📈</span>
+                    <span>Analytics</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
             <div class="breadcrumb">
                 <a href="dashboard.html">Dashboard</a>
                 <span>/</span>
                 <span>Create New Wedding</span>
             </div>
         </div>
-    </div>
 
-    <div class="container">
-        <!-- Progress Steps -->
-        <div class="steps">
-            <div class="step active" id="step-indicator-1">
-                <div class="step-number">1</div>
-                <span>Choose Template</span>
-            </div>
-            <div class="step" id="step-indicator-2">
-                <div class="step-number">2</div>
-                <span>Basic Info</span>
-            </div>
-            <div class="step" id="step-indicator-3">
-                <div class="step-number">3</div>
-                <span>Review & Create</span>
-            </div>
-        </div>
-
-        <div class="card">
-            <div id="alert" class="alert"></div>
-
-            <!-- Step 1: Choose Template -->
-            <div class="step-content active" id="step-1">
-                <h2>Choose a Template</h2>
-                <p class="subtitle">Select the design template for this wedding invitation</p>
-
-                <div class="template-grid">
-                    <div class="template-card" onclick="selectTemplate('timeless')" data-template="timeless">
-                        <div class="template-preview timeless">
-                            <div class="check-mark">✓</div>
-                            💍
-                        </div>
-                        <div class="template-info">
-                            <h3>Timeless</h3>
-                            <p>Classic and elegant design with smooth animations. Perfect for traditional weddings.</p>
-                        </div>
-                    </div>
-
-                    <div class="template-card" onclick="selectTemplate('elegant')" data-template="elegant">
-                        <div class="template-preview elegant">
-                            <div class="check-mark">✓</div>
-                            💐
-                        </div>
-                        <div class="template-info">
-                            <h3>Elegant</h3>
-                            <p>Minimalist and sophisticated design. Great for modern couples.</p>
-                        </div>
-                    </div>
-
-                    <div class="template-card" onclick="selectTemplate('classic')" data-template="classic" style="opacity: 0.5;">
-                        <div class="template-preview classic">
-                            💎
-                        </div>
-                        <div class="template-info">
-                            <h3>Classic (Coming Soon)</h3>
-                            <p>Traditional design with vintage elements.</p>
-                        </div>
-                    </div>
+        <div class="container">
+            <div class="steps">
+                <div class="step active" id="step-indicator-1">
+                    <div class="step-number">1</div>
+                    <span>Choose Template</span>
                 </div>
-
-                <div class="actions">
-                    <a href="dashboard.html" class="btn btn-secondary">← Cancel</a>
-                    <button class="btn btn-primary" id="btn-next-1" onclick="nextStep(2)" disabled>
-                        Next: Basic Info →
-                    </button>
+                <div class="step" id="step-indicator-2">
+                    <div class="step-number">2</div>
+                    <span>Basic Info</span>
+                </div>
+                <div class="step" id="step-indicator-3">
+                    <div class="step-number">3</div>
+                    <span>Review & Create</span>
                 </div>
             </div>
 
-            <!-- Step 2: Basic Information -->
-            <div class="step-content" id="step-2">
-                <h2>Basic Information</h2>
-                <p class="subtitle">Enter the couple's details and wedding date</p>
+            <div class="card">
+                <div id="alert" class="alert"></div>
 
-                <form id="basic-info-form">
-                    <div class="form-group">
-                        <label for="couple-names">Couple Names *</label>
-                        <input type="text" id="couple-names" placeholder="e.g., John & Jane" required>
+                <!-- Step 1: Choose Template -->
+                <div class="step-content active" id="step-1">
+                    <h2>Choose a Template</h2>
+                    <p class="subtitle">Select the design template for this wedding invitation</p>
+
+                    <div class="template-grid">
+                        <div class="template-card" onclick="selectTemplate('timeless')" data-template="timeless">
+                            <div class="template-preview timeless">
+                                <div class="check-mark">✓</div>
+                                💍
+                            </div>
+                            <div class="template-info">
+                                <h3>Timeless</h3>
+                                <p>Classic and elegant design with smooth animations. Perfect for traditional weddings.</p>
+                            </div>
+                        </div>
+
+                        <div class="template-card" onclick="selectTemplate('elegant')" data-template="elegant">
+                            <div class="template-preview elegant">
+                                <div class="check-mark">✓</div>
+                                💐
+                            </div>
+                            <div class="template-info">
+                                <h3>Elegant</h3>
+                                <p>Minimalist and sophisticated design. Great for modern couples.</p>
+                            </div>
+                        </div>
+
+                        <div class="template-card disabled" data-template="classic">
+                            <div class="template-preview classic">
+                                💎
+                            </div>
+                            <div class="template-info">
+                                <h3>Classic</h3>
+                                <p>Coming soon - Traditional design with vintage elements.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="groom-name">Groom Full Name *</label>
-                            <input type="text" id="groom-name" placeholder="e.g., John Smith" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bride-name">Bride Full Name *</label>
-                            <input type="text" id="bride-name" placeholder="e.g., Jane Doe" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="wedding-date">Wedding Date *</label>
-                            <input type="text" id="wedding-date" placeholder="e.g., SATURDAY, 25 DECEMBER 2025" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="project-status">Initial Status</label>
-                            <select id="project-status">
-                                <option value="draft">Draft (not public yet)</option>
-                                <option value="active">Active (public)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="slug">Custom URL Slug</label>
-                        <input type="text" id="slug" placeholder="auto-generated from couple names">
-                        <small style="color: #718096; font-size: 13px; margin-top: 4px; display: block;">
-                            Will be: /wedding/<span id="slug-preview">your-slug</span>
-                        </small>
-                    </div>
-                </form>
-
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="prevStep(1)">← Back</button>
-                    <button class="btn btn-primary" onclick="nextStep(3)">Next: Review →</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Review & Create -->
-            <div class="step-content" id="step-3">
-                <h2>Review & Create</h2>
-                <p class="subtitle">Review your project details before creating</p>
-
-                <div style="background: #f7fafc; padding: 24px; border-radius: 8px; margin-bottom: 24px;">
-                    <h3 style="margin-bottom: 16px; color: #2d3748;">Project Summary</h3>
-
-                    <div style="display: grid; gap: 12px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Template:</span>
-                            <strong id="review-template" style="color: #2d3748;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Couple Names:</span>
-                            <strong id="review-couple" style="color: #2d3748;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Groom:</span>
-                            <strong id="review-groom" style="color: #2d3748;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Bride:</span>
-                            <strong id="review-bride" style="color: #2d3748;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Wedding Date:</span>
-                            <strong id="review-date" style="color: #2d3748;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">URL:</span>
-                            <strong id="review-url" style="color: #667eea;"></strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #718096;">Status:</span>
-                            <strong id="review-status" style="color: #2d3748;"></strong>
-                        </div>
+                    <div class="actions">
+                        <a href="dashboard.html" class="btn btn-secondary">← Cancel</a>
+                        <button class="btn btn-primary" id="btn-next-1" onclick="nextStep(2)" disabled>
+                            Next: Basic Info →
+                        </button>
                     </div>
                 </div>
 
-                <div class="actions">
-                    <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
-                    <button class="btn btn-primary" id="btn-create" onclick="createProject()">
-                        ✨ Create Project
-                    </button>
+                <!-- Step 2: Basic Information -->
+                <div class="step-content" id="step-2">
+                    <h2>Basic Information</h2>
+                    <p class="subtitle">Enter the couple's details and wedding date</p>
+
+                    <form id="basic-info-form">
+                        <div class="form-group">
+                            <label for="couple-names">Couple Names <span class="required">*</span></label>
+                            <input type="text" id="couple-names" placeholder="e.g., John & Jane" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="groom-name">Groom Full Name <span class="required">*</span></label>
+                                <input type="text" id="groom-name" placeholder="e.g., John Smith" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bride-name">Bride Full Name <span class="required">*</span></label>
+                                <input type="text" id="bride-name" placeholder="e.g., Jane Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="wedding-date">Wedding Date <span class="required">*</span></label>
+                                <input type="text" id="wedding-date" placeholder="e.g., SATURDAY, 25 DECEMBER 2025" required>
+                                <span class="form-hint">Enter the display format you want</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="project-status">Initial Status</label>
+                                <select id="project-status">
+                                    <option value="draft">Draft (not public yet)</option>
+                                    <option value="active">Active (public)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="slug">Custom URL Slug</label>
+                            <input type="text" id="slug" placeholder="auto-generated from couple names">
+                            <div class="slug-preview">
+                                <span>🔗</span>
+                                <span>/wedding/<span id="slug-preview">your-slug</span></span>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="prevStep(1)">← Back</button>
+                        <button class="btn btn-primary" onclick="nextStep(3)">Next: Review →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review & Create -->
+                <div class="step-content" id="step-3">
+                    <h2>Review & Create</h2>
+                    <p class="subtitle">Review your project details before creating</p>
+
+                    <div class="review-card">
+                        <h3>Project Summary</h3>
+                        <div class="review-item">
+                            <span class="review-label">Template:</span>
+                            <span class="review-value" id="review-template"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Couple Names:</span>
+                            <span class="review-value" id="review-couple"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Groom:</span>
+                            <span class="review-value" id="review-groom"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Bride:</span>
+                            <span class="review-value" id="review-bride"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Wedding Date:</span>
+                            <span class="review-value" id="review-date"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">URL:</span>
+                            <span class="review-value url" id="review-url"></span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Status:</span>
+                            <span class="review-value" id="review-status"></span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                        <button class="btn btn-primary" id="btn-create" onclick="createProject()">
+                            ✨ Create Project
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         const SUPABASE_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co';
@@ -510,22 +797,19 @@
         let currentStep = 1;
 
         function selectTemplate(template) {
-            if (template === 'classic') return; // Coming soon
+            if (template === 'classic') return;
 
             selectedTemplate = template;
 
-            // Update UI
             document.querySelectorAll('.template-card').forEach(card => {
                 card.classList.remove('selected');
             });
             document.querySelector(`[data-template="${template}"]`).classList.add('selected');
 
-            // Enable next button
             document.getElementById('btn-next-1').disabled = false;
         }
 
         function nextStep(step) {
-            // Validate current step
             if (currentStep === 2) {
                 const coupleNames = document.getElementById('couple-names').value.trim();
                 const groomName = document.getElementById('groom-name').value.trim();
@@ -537,18 +821,15 @@
                     return;
                 }
 
-                // Auto-generate slug if not provided
                 let slug = document.getElementById('slug').value.trim();
                 if (!slug) {
                     slug = generateSlug(coupleNames);
                     document.getElementById('slug').value = slug;
                 }
 
-                // Update review
                 updateReview();
             }
 
-            // Update steps
             document.querySelector(`#step-${currentStep}`).classList.remove('active');
             document.querySelector(`#step-indicator-${currentStep}`).classList.remove('active');
             document.querySelector(`#step-indicator-${currentStep}`).classList.add('completed');
@@ -558,7 +839,6 @@
             document.querySelector(`#step-${step}`).classList.add('active');
             document.querySelector(`#step-indicator-${step}`).classList.add('active');
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -667,7 +947,6 @@
             }
         }
 
-        // Auto-update slug preview
         document.getElementById('couple-names').addEventListener('input', (e) => {
             const slug = generateSlug(e.target.value);
             document.getElementById('slug-preview').textContent = slug || 'your-slug';
