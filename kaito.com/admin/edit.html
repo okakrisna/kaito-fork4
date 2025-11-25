@@ -406,9 +406,24 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZXdpaHN3dmd0Z3p6c2ZhZWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5NzAwNzcsImV4cCI6MjA3OTU0NjA3N30.0OiXAfBDe5qGw8us5i9rjfNR75XdS0RlFojhy_RhKsY';
         const REST_API_URL = `${SUPABASE_URL}/rest/v1/timeless_content`;
 
-        // Get project ID from URL parameter
+        // Get project ID from URL parameter OR localStorage
         const urlParams = new URLSearchParams(window.location.search);
-        const PROJECT_ID = urlParams.get('id');
+        let PROJECT_ID = urlParams.get('id');
+
+        console.log('Edit page loaded');
+        console.log('URL parameters:', window.location.search);
+        console.log('PROJECT_ID from URL:', PROJECT_ID);
+
+        if (!PROJECT_ID) {
+            PROJECT_ID = localStorage.getItem('editProjectId');
+            console.log('PROJECT_ID from localStorage:', PROJECT_ID);
+
+            if (PROJECT_ID) {
+                console.log('Using localStorage fallback for project ID');
+                localStorage.removeItem('editProjectId');
+            }
+        }
+
         let currentProject = null;
 
         // Preview gambar sebelum upload

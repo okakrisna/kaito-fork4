@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics - Wedding Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 24px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .summary-card h3 {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            color: #2d3748;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .summary-card .label {
+            color: #a0aec0;
+            font-size: 12px;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h2 {
+            color: #2d3748;
+            font-size: 18px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tabs button {
+            padding: 8px 16px;
+            border: none;
+            background: #e2e8f0;
+            color: #2d3748;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .filter-tabs button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            padding: 12px;
+            font-weight: 600;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 8px;
+            background: #f7fafc;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #e2e8f0;
+            transform: scale(1.05);
+        }
+
+        .calendar-day.has-sales {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .calendar-day.has-sales:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .calendar-day .date {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .calendar-day .count {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .sales-table {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            color: #718096;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        td {
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        .template-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .template-timeless {
+            background: #e0e7ff;
+            color: #5b21b6;
+        }
+
+        .template-elegant {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .add-sale-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+        }
+
+        .add-sale-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2d3748;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .form-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Sales Analytics</h1>
+        <div>
+            <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Total Sales This Month</h3>
+                <div class="value" id="total-sales">0</div>
+                <div class="label">All Templates</div>
+            </div>
+            <div class="summary-card">
+                <h3>Timeless Template</h3>
+                <div class="value" id="timeless-sales">0</div>
+                <div class="label">Sales This Month</div>
+            </div>
+            <div class="summary-card">
+                <h3>Elegant Template</h3>
+                <div class="value" id="elegant-sales">0</div>
+                <div class="label">Sales This Month</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Revenue</h3>
+                <div class="value" id="total-revenue">Rp 0</div>
+                <div class="label">This Month</div>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2>📅 Sales Calendar</h2>
+                <div class="filter-tabs">
+                    <button class="active" onclick="changeMonth(-1)">← Previous</button>
+                    <button id="current-month">November 2025</button>
+                    <button onclick="changeMonth(1)">Next →</button>
+                </div>
+            </div>
+            <div class="calendar" id="calendar"></div>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2>📋 Recent Sales</h2>
+            </div>
+            <div class="sales-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Template</th>
+                            <th>Couple Names</th>
+                            <th>Price</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Sale Button -->
+    <button class="add-sale-btn" onclick="openAddModal()">+</button>
+
+    <!-- Add Sale Modal -->
+    <div class="modal" id="add-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Add New Sale</h2>
+            </div>
+            <form id="add-sale-form">
+                <div class="form-group">
+                    <label>Template</label>
+                    <select id="template" required>
+                        <option value="">Select Template</option>
+                        <option value="timeless">Timeless</option>
+                        <option value="elegant">Elegant</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Couple Names</label>
+                    <input type="text" id="couple-names" placeholder="e.g. John & Jane" required>
+                </div>
+                <div class="form-group">
+                    <label>Sale Date</label>
+                    <input type="date" id="sale-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (Rp)</label>
+                    <input type="number" id="price" placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="notes" rows="3" placeholder="Any additional notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Sale</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://fnewihswvgtgzzsfaeis.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZXdpaHN3dmd0Z3p6c2ZhZWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5NzAwNzcsImV4cCI6MjA3OTU0NjA3N30.0OiXAfBDe5qGw8us5i9rjfNR75XdS0RlFojhy_RhKsY';
+
+        let currentDate = new Date();
+        let salesData = [];
+
+        async function loadSalesData() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/template_sales?select=*&order=sale_date.desc`, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load sales');
+
+                salesData = await response.json();
+                updateSummary();
+                renderCalendar();
+                renderSalesTable();
+            } catch (error) {
+                console.error('Error loading sales:', error);
+            }
+        }
+
+        function updateSummary() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const thisMonthSales = salesData.filter(sale => {
+                const saleDate = new Date(sale.sale_date);
+                return saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear;
+            });
+
+            const timelessSales = thisMonthSales.filter(s => s.template_name === 'timeless').length;
+            const elegantSales = thisMonthSales.filter(s => s.template_name === 'elegant').length;
+            const totalRevenue = thisMonthSales.reduce((sum, s) => sum + parseFloat(s.price), 0);
+
+            document.getElementById('total-sales').textContent = thisMonthSales.length;
+            document.getElementById('timeless-sales').textContent = timelessSales;
+            document.getElementById('elegant-sales').textContent = elegantSales;
+            document.getElementById('total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
+        }
+
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthName = currentDate.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+            document.getElementById('current-month').textContent = monthName;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day empty';
+                calendar.appendChild(empty);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const salesCount = salesData.filter(s => s.sale_date === dateStr).length;
+
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day' + (salesCount > 0 ? ' has-sales' : '');
+                dayEl.innerHTML = `
+                    <div class="date">${day}</div>
+                    ${salesCount > 0 ? `<div class="count">${salesCount} sale${salesCount > 1 ? 's' : ''}</div>` : ''}
+                `;
+
+                if (salesCount > 0) {
+                    dayEl.onclick = () => filterByDate(dateStr);
+                }
+
+                calendar.appendChild(dayEl);
+            }
+        }
+
+        function renderSalesTable() {
+            const tbody = document.getElementById('sales-tbody');
+
+            if (salesData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a0aec0; padding: 40px;">No sales data yet. Click + button to add your first sale.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = salesData.map(sale => `
+                <tr>
+                    <td>${new Date(sale.sale_date).toLocaleDateString('id-ID')}</td>
+                    <td><span class="template-badge template-${sale.template_name}">${sale.template_name}</span></td>
+                    <td>${sale.couple_names}</td>
+                    <td>Rp ${parseFloat(sale.price).toLocaleString('id-ID')}</td>
+                    <td>${sale.notes || '-'}</td>
+                    <td>
+                        <button onclick="deleteSale('${sale.id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function filterByDate(date) {
+            alert(`Sales on ${new Date(date).toLocaleDateString('id-ID')}:\n\n` +
+                salesData.filter(s => s.sale_date === date)
+                    .map(s => `${s.template_name}: ${s.couple_names} - Rp ${parseFloat(s.price).toLocaleString('id-ID')}`)
+                    .join('\n')
+            );
+        }
+
+        function openAddModal() {
+            document.getElementById('add-modal').classList.add('active');
+            document.getElementById('sale-date').valueAsDate = new Date();
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.remove('active');
+            document.getElementById('add-sale-form').reset();
+        }
+
+        document.getElementById('add-sale-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                template_name: document.getElementById('template').value,
+                couple_names: document.getElementById('couple-names').value,
+                sale_date: document.getElementById('sale-date').value,
+                price: parseFloat(document.getElementById('price').value),
+                notes: document.getElementById('notes').value || null
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/template_sales`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Failed to add sale');
+
+                alert('✅ Sale added successfully!');
+                closeAddModal();
+                loadSalesData();
+            } catch (error) {
+                console.error('Error adding sale:', error);
+                alert('❌ Failed to add sale. Please try again.');
+            }
+        });
+
+        async function deleteSale(id) {
+            if (!confirm('Delete this sale?')) return;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/template_sales?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete sale');
+
+                alert('✅ Sale deleted successfully!');
+                loadSalesData();
+            } catch (error) {
+                console.error('Error deleting sale:', error);
+                alert('❌ Failed to delete sale. Please try again.');
+            }
+        }
+
+        loadSalesData();
+    </script>
+</body>
+</html>

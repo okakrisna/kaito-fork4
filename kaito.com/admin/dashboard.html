@@ -354,12 +354,12 @@
     <div class="header">
         <h1>🎊 Wedding Projects Dashboard</h1>
         <div class="header-actions">
+            <a href="analytics.html" class="btn btn-secondary">
+                📊 Sales Analytics
+            </a>
             <button class="btn btn-secondary" onclick="refreshData()">
                 🔄 Refresh
             </button>
-            <a href="create.html" class="btn btn-primary">
-                ➕ Create New Wedding
-            </a>
         </div>
     </div>
 
@@ -392,6 +392,48 @@
                 <div class="stat-content">
                     <h3 id="stat-drafts">0</h3>
                     <p>Draft Projects</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Cards Section -->
+        <div style="margin-bottom: 40px;">
+            <h2 style="color: #2d3748; font-size: 20px; margin-bottom: 20px;">📋 Available Templates</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="template-card" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                    <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        ⏱️
+                    </div>
+                    <div style="padding: 20px;">
+                        <h3 style="color: #2d3748; font-size: 18px; margin-bottom: 8px;">Timeless Template</h3>
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 16px;">Classic elegant design with countdown timer</p>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="../timeless/" target="_blank" class="btn btn-secondary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                                👁️ Preview
+                            </a>
+                            <a href="edit.html?template=timeless" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                                ✏️ Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                    <div style="height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        💎
+                    </div>
+                    <div style="padding: 20px;">
+                        <h3 style="color: #2d3748; font-size: 18px; margin-bottom: 8px;">Elegant Template</h3>
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 16px;">Modern sophisticated design with animations</p>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="../elegant/" target="_blank" class="btn btn-secondary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                                👁️ Preview
+                            </a>
+                            <a href="edit.html?template=elegant" class="btn btn-primary" style="flex: 1; justify-content: center; text-align: center; font-size: 13px;">
+                                ✏️ Edit
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -491,20 +533,13 @@
                 allProjects = await response.json();
                 filteredProjects = allProjects;
 
-                console.log('✅ Projects loaded:', allProjects.length);
-                if (allProjects.length > 0) {
-                    console.log('📋 First project sample:', allProjects[0]);
-                    console.log('🔑 First project ID:', allProjects[0].id);
-                    console.log('🔑 First project ID type:', typeof allProjects[0].id);
-                }
-
-                // Check for projects missing ID
-                const missingIds = allProjects.filter(p => !p.id);
-                if (missingIds.length > 0) {
-                    console.error('❌ Projects missing ID:', missingIds);
-                } else {
-                    console.log('✅ All projects have valid IDs');
-                }
+                console.log('Projects loaded:', allProjects.length);
+                console.log('First project sample:', allProjects[0]);
+                allProjects.forEach((p, i) => {
+                    if (!p.id) {
+                        console.error(`Project ${i} missing ID:`, p);
+                    }
+                });
 
                 updateStats();
                 renderProjects();
@@ -549,108 +584,59 @@
                 return;
             }
 
-            grid.innerHTML = filteredProjects.map(project => {
-                // Debug: Check if project has valid ID
-                if (!project.id) {
-                    console.error('Project missing ID:', project);
-                }
-
-                const projectId = project.id || '';
-                const coupleName = project.couple_names || 'Untitled Wedding';
-
-                return `
-                    <div class="project-card">
-                        <div style="position: absolute; top: 12px; left: 12px; z-index: 10;">
-                            <input type="checkbox" class="project-checkbox" data-project-id="${projectId}"
-                                   style="width: 20px; height: 20px; cursor: pointer;"
-                                   onchange="updateSelection()">
+            grid.innerHTML = filteredProjects.map(project => `
+                <div class="project-card">
+                    <div style="position: absolute; top: 12px; left: 12px; z-index: 10;">
+                        <input type="checkbox" class="project-checkbox" data-project-id="${project.id}"
+                               style="width: 20px; height: 20px; cursor: pointer;"
+                               onchange="updateSelection()">
+                    </div>
+                    <div class="project-thumbnail ${project.template_name || 'timeless'}">
+                        <div class="template-badge">${(project.template_name || 'timeless').toUpperCase()}</div>
+                        <div class="status-badge ${project.status || 'draft'}">${project.status || 'draft'}</div>
+                        ${project.password_protected ? '🔒' : '💍'}
+                        ${!project.is_published ? '<div style="position: absolute; bottom: 8px; right: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">UNPUBLISHED</div>' : ''}
+                    </div>
+                    <div class="project-content">
+                        <h3>${project.couple_names || 'Untitled Wedding'}</h3>
+                        <div class="project-meta">
+                            <span>📅 ${project.wedding_date || 'No date'}</span>
+                            <span>👁️ ${project.views_count || 0} views</span>
+                            ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
                         </div>
-                        <div class="project-thumbnail ${project.template_name || 'timeless'}">
-                            <div class="template-badge">${(project.template_name || 'timeless').toUpperCase()}</div>
-                            <div class="status-badge ${project.status || 'draft'}">${project.status || 'draft'}</div>
-                            ${project.password_protected ? '🔒' : '💍'}
-                            ${!project.is_published ? '<div style="position: absolute; bottom: 8px; right: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">UNPUBLISHED</div>' : ''}
-                        </div>
-                        <div class="project-content">
-                            <h3>${coupleName}</h3>
-                            <div class="project-meta">
-                                <span>📅 ${project.wedding_date || 'No date'}</span>
-                                <span>👁️ ${project.views_count || 0} views</span>
-                                ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
-                            </div>
-                            <div class="project-actions">
-                                <button class="btn btn-sm btn-edit" data-project-id="${projectId}" ${!projectId ? 'disabled' : ''}>
-                                    ✏️ Edit
-                                </button>
-                                <button class="btn btn-sm btn-preview" data-slug="${project.slug}" data-template="${project.template_name || 'timeless'}">
-                                    👁️ Preview
-                                </button>
-                                <button class="btn btn-sm btn-delete" data-project-id="${projectId}" data-couple-name="${coupleName.replace(/"/g, '&quot;')}">
-                                    🗑️
-                                </button>
-                            </div>
+                        <div class="project-actions">
+                            <button class="btn btn-sm btn-edit" onclick="editProject('${project.id}')">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-sm btn-preview" onclick="previewProject('${project.slug}', '${project.template_name || 'timeless'}')">
+                                👁️ Preview
+                            </button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteProject('${project.id}', '${project.couple_names}')">
+                                🗑️
+                            </button>
                         </div>
                     </div>
-                `;
-            }).join('');
-
-            // Attach event listeners to buttons
-            attachButtonListeners();
-        }
-
-        function attachButtonListeners() {
-            // Edit buttons
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const projectId = this.getAttribute('data-project-id');
-                    editProject(projectId);
-                });
-            });
-
-            // Preview buttons
-            document.querySelectorAll('.btn-preview').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const slug = this.getAttribute('data-slug');
-                    const template = this.getAttribute('data-template');
-                    previewProject(slug, template);
-                });
-            });
-
-            // Delete buttons
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const projectId = this.getAttribute('data-project-id');
-                    const coupleName = this.getAttribute('data-couple-name');
-                    deleteProject(projectId, coupleName);
-                });
-            });
+                </div>
+            `).join('');
         }
 
         function editProject(id) {
-            console.log('🔧 editProject called');
-            console.log('   ID value:', id);
-            console.log('   ID type:', typeof id);
-            console.log('   ID length:', id ? id.length : 0);
-            console.log('   ID is valid:', id && id !== 'undefined' && id !== 'null' && id !== '');
+            console.log('editProject called with ID:', id);
+            console.log('ID type:', typeof id);
+            console.log('ID is valid:', id && id !== 'undefined' && id !== 'null');
 
-            // Validate project ID
-            if (!id || id === 'undefined' || id === 'null' || id === '' || id.trim() === '') {
-                console.error('❌ Invalid project ID detected!');
-                console.error('   Received ID:', id);
-                console.error('   This usually means the project data is missing the ID field');
-
-                alert('❌ Error: Invalid project ID\n\n' +
-                      'The project ID is missing or invalid.\n' +
-                      'This might be a data issue.\n\n' +
-                      'Please try:\n' +
-                      '1. Refreshing the dashboard\n' +
-                      '2. Checking browser console for errors\n' +
-                      '3. Contacting support if issue persists');
+            if (!id || id === 'undefined' || id === 'null') {
+                alert('❌ Error: Invalid project ID\n\nProject ID is: ' + id + '\n\nPlease reload the dashboard and try again.');
+                console.error('Invalid project ID:', id);
                 return;
             }
 
-            const url = `edit.html?id=${encodeURIComponent(id)}`;
-            console.log('✅ Navigating to:', url);
+            console.log('Storing project ID in localStorage:', id);
+            localStorage.setItem('editProjectId', id);
+
+            const url = `edit.html?id=${id}`;
+            console.log('Navigating to:', url);
+            console.log('Full URL:', new URL(url, window.location.href).href);
 
             window.location.href = url;
         }
