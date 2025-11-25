@@ -112,9 +112,13 @@
                         <td>${project.template_name || 'timeless'}</td>
                         <td>${new Date(project.created_at).toLocaleDateString()}</td>
                         <td>
-                            <a href="edit.html?id=${project.id}" class="btn" style="background: #10b981;">
-                                ✏️ Edit (ID: ${project.id})
+                            <a href="edit.html?id=${project.id}" class="btn" style="background: #10b981;"
+                               onclick="console.log('Navigating to:', this.href); return true;">
+                                ✏️ Edit Link
                             </a>
+                            <button onclick="testEdit('${project.id}')" class="btn" style="background: #f59e0b; margin-left: 8px; border: none; cursor: pointer;">
+                                🧪 Test JS
+                            </button>
                         </td>
                     </tr>
                 `).join('');
@@ -129,6 +133,17 @@
                     </div>
                 `;
             }
+        }
+
+        function testEdit(id) {
+            console.log('Test Edit clicked for ID:', id);
+            const url = `edit.html?id=${id}`;
+            console.log('Full URL will be:', new URL(url, window.location.href).href);
+
+            alert(`Testing navigation to:\n${url}\n\nProject ID: ${id}\n\nCheck console for details.`);
+
+            console.log('Attempting window.location.href...');
+            window.location.href = url;
         }
 
         window.addEventListener('DOMContentLoaded', loadProjects);
