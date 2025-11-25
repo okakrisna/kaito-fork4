@@ -710,6 +710,13 @@
         const REST_API_URL = `${SUPABASE_URL}/rest/v1/timeless_content`;
         let currentProject = null;
 
+        // Debug logging
+        console.log('=== EDIT PAGE DEBUG ===');
+        console.log('Full URL:', window.location.href);
+        console.log('Search params:', window.location.search);
+        console.log('PROJECT_ID:', PROJECT_ID);
+        console.log('Type of PROJECT_ID:', typeof PROJECT_ID);
+
         // Section Navigation
         function showSection(sectionName, clickedElement) {
             // Hide all sections

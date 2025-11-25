@@ -887,6 +887,13 @@
         function renderProjects() {
             const grid = document.getElementById('projects-grid');
 
+            console.log('=== RENDERING PROJECTS ===');
+            console.log('Filtered projects count:', filteredProjects.length);
+            if (filteredProjects.length > 0) {
+                console.log('First project sample:', filteredProjects[0]);
+                console.log('First project ID:', filteredProjects[0].id);
+            }
+
             if (filteredProjects.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
@@ -934,12 +941,19 @@
         }
 
         function editProject(id) {
+            console.log('=== EDIT PROJECT CALLED ===');
+            console.log('ID received:', id);
+            console.log('Type:', typeof id);
+
             if (!id || id === 'undefined' || id === 'null') {
                 alert('Error: Invalid project ID');
+                console.error('Invalid ID!');
                 return;
             }
             localStorage.setItem('editProjectId', id);
-            window.location.href = `edit.html?id=${id}`;
+            const editUrl = `edit.html?id=${id}`;
+            console.log('Navigating to:', editUrl);
+            window.location.href = editUrl;
         }
 
         function previewProject(slug, template) {
