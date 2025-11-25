@@ -491,13 +491,20 @@
                 allProjects = await response.json();
                 filteredProjects = allProjects;
 
-                console.log('Projects loaded:', allProjects.length);
-                console.log('First project sample:', allProjects[0]);
-                allProjects.forEach((p, i) => {
-                    if (!p.id) {
-                        console.error(`Project ${i} missing ID:`, p);
-                    }
-                });
+                console.log('✅ Projects loaded:', allProjects.length);
+                if (allProjects.length > 0) {
+                    console.log('📋 First project sample:', allProjects[0]);
+                    console.log('🔑 First project ID:', allProjects[0].id);
+                    console.log('🔑 First project ID type:', typeof allProjects[0].id);
+                }
+
+                // Check for projects missing ID
+                const missingIds = allProjects.filter(p => !p.id);
+                if (missingIds.length > 0) {
+                    console.error('❌ Projects missing ID:', missingIds);
+                } else {
+                    console.log('✅ All projects have valid IDs');
+                }
 
                 updateStats();
                 renderProjects();
@@ -542,56 +549,77 @@
                 return;
             }
 
-            grid.innerHTML = filteredProjects.map(project => `
-                <div class="project-card">
-                    <div style="position: absolute; top: 12px; left: 12px; z-index: 10;">
-                        <input type="checkbox" class="project-checkbox" data-project-id="${project.id}"
-                               style="width: 20px; height: 20px; cursor: pointer;"
-                               onchange="updateSelection()">
-                    </div>
-                    <div class="project-thumbnail ${project.template_name || 'timeless'}">
-                        <div class="template-badge">${(project.template_name || 'timeless').toUpperCase()}</div>
-                        <div class="status-badge ${project.status || 'draft'}">${project.status || 'draft'}</div>
-                        ${project.password_protected ? '🔒' : '💍'}
-                        ${!project.is_published ? '<div style="position: absolute; bottom: 8px; right: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">UNPUBLISHED</div>' : ''}
-                    </div>
-                    <div class="project-content">
-                        <h3>${project.couple_names || 'Untitled Wedding'}</h3>
-                        <div class="project-meta">
-                            <span>📅 ${project.wedding_date || 'No date'}</span>
-                            <span>👁️ ${project.views_count || 0} views</span>
-                            ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
+            grid.innerHTML = filteredProjects.map(project => {
+                // Debug: Check if project has valid ID
+                if (!project.id) {
+                    console.error('Project missing ID:', project);
+                }
+
+                const projectId = project.id || '';
+                const coupleName = project.couple_names || 'Untitled Wedding';
+
+                return `
+                    <div class="project-card">
+                        <div style="position: absolute; top: 12px; left: 12px; z-index: 10;">
+                            <input type="checkbox" class="project-checkbox" data-project-id="${projectId}"
+                                   style="width: 20px; height: 20px; cursor: pointer;"
+                                   onchange="updateSelection()">
                         </div>
-                        <div class="project-actions">
-                            <button class="btn btn-sm btn-edit" onclick="editProject('${project.id}')">
-                                ✏️ Edit
-                            </button>
-                            <button class="btn btn-sm btn-preview" onclick="previewProject('${project.slug}', '${project.template_name || 'timeless'}')">
-                                👁️ Preview
-                            </button>
-                            <button class="btn btn-sm btn-delete" onclick="deleteProject('${project.id}', '${project.couple_names}')">
-                                🗑️
-                            </button>
+                        <div class="project-thumbnail ${project.template_name || 'timeless'}">
+                            <div class="template-badge">${(project.template_name || 'timeless').toUpperCase()}</div>
+                            <div class="status-badge ${project.status || 'draft'}">${project.status || 'draft'}</div>
+                            ${project.password_protected ? '🔒' : '💍'}
+                            ${!project.is_published ? '<div style="position: absolute; bottom: 8px; right: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">UNPUBLISHED</div>' : ''}
+                        </div>
+                        <div class="project-content">
+                            <h3>${coupleName}</h3>
+                            <div class="project-meta">
+                                <span>📅 ${project.wedding_date || 'No date'}</span>
+                                <span>👁️ ${project.views_count || 0} views</span>
+                                ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn btn-sm btn-edit" onclick="editProject('${projectId}')" ${!projectId ? 'disabled' : ''}>
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn btn-sm btn-preview" onclick="previewProject('${project.slug}', '${project.template_name || 'timeless'}')">
+                                    👁️ Preview
+                                </button>
+                                <button class="btn btn-sm btn-delete" onclick="deleteProject('${projectId}', '${coupleName.replace(/'/g, "\\'")}')">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function editProject(id) {
-            console.log('editProject called with ID:', id);
-            console.log('ID type:', typeof id);
-            console.log('ID is valid:', id && id !== 'undefined' && id !== 'null');
+            console.log('🔧 editProject called');
+            console.log('   ID value:', id);
+            console.log('   ID type:', typeof id);
+            console.log('   ID length:', id ? id.length : 0);
+            console.log('   ID is valid:', id && id !== 'undefined' && id !== 'null' && id !== '');
 
-            if (!id || id === 'undefined' || id === 'null') {
-                alert('❌ Error: Invalid project ID\n\nProject ID is: ' + id + '\n\nPlease reload the dashboard and try again.');
-                console.error('Invalid project ID:', id);
+            // Validate project ID
+            if (!id || id === 'undefined' || id === 'null' || id === '' || id.trim() === '') {
+                console.error('❌ Invalid project ID detected!');
+                console.error('   Received ID:', id);
+                console.error('   This usually means the project data is missing the ID field');
+
+                alert('❌ Error: Invalid project ID\n\n' +
+                      'The project ID is missing or invalid.\n' +
+                      'This might be a data issue.\n\n' +
+                      'Please try:\n' +
+                      '1. Refreshing the dashboard\n' +
+                      '2. Checking browser console for errors\n' +
+                      '3. Contacting support if issue persists');
                 return;
             }
 
-            const url = `edit.html?id=${id}`;
-            console.log('Navigating to:', url);
-            console.log('Full URL:', new URL(url, window.location.href).href);
+            const url = `edit.html?id=${encodeURIComponent(id)}`;
+            console.log('✅ Navigating to:', url);
 
             window.location.href = url;
         }
