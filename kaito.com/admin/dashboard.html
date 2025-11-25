@@ -1065,7 +1065,7 @@
             if (!confirm(`Mark "${name}" as completed?\n\nThis will move the project to Orders page.`)) return;
 
             try {
-                // Update status to 'completed' and set completed_at timestamp
+                // Update status to 'completed'
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/timeless_content?id=eq.${id}`, {
                     method: 'PATCH',
                     headers: {
@@ -1075,8 +1075,7 @@
                         'Prefer': 'return=minimal'
                     },
                     body: JSON.stringify({
-                        status: 'completed',
-                        completed_at: new Date().toISOString()
+                        status: 'completed'
                     })
                 });
 
