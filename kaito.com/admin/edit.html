@@ -737,6 +737,10 @@
                 console.log('Using ID from localStorage:', storedId);
                 PROJECT_ID = storedId;
             }
+        } else {
+            // Update localStorage with the current PROJECT_ID from URL
+            console.log('Updating localStorage with PROJECT_ID:', PROJECT_ID);
+            localStorage.setItem('editProjectId', PROJECT_ID);
         }
 
         // Section Navigation
