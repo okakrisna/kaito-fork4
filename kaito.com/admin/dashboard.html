@@ -579,13 +579,13 @@
                                 ${project.rsvp_count ? `<span>💌 ${project.rsvp_count} RSVPs</span>` : ''}
                             </div>
                             <div class="project-actions">
-                                <button class="btn btn-sm btn-edit" onclick="editProject('${projectId}')" ${!projectId ? 'disabled' : ''}>
+                                <button class="btn btn-sm btn-edit" data-project-id="${projectId}" ${!projectId ? 'disabled' : ''}>
                                     ✏️ Edit
                                 </button>
-                                <button class="btn btn-sm btn-preview" onclick="previewProject('${project.slug}', '${project.template_name || 'timeless'}')">
+                                <button class="btn btn-sm btn-preview" data-slug="${project.slug}" data-template="${project.template_name || 'timeless'}">
                                     👁️ Preview
                                 </button>
-                                <button class="btn btn-sm btn-delete" onclick="deleteProject('${projectId}', '${coupleName.replace(/'/g, "\\'")}')">
+                                <button class="btn btn-sm btn-delete" data-project-id="${projectId}" data-couple-name="${coupleName.replace(/"/g, '&quot;')}">
                                     🗑️
                                 </button>
                             </div>
@@ -593,6 +593,37 @@
                     </div>
                 `;
             }).join('');
+
+            // Attach event listeners to buttons
+            attachButtonListeners();
+        }
+
+        function attachButtonListeners() {
+            // Edit buttons
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    editProject(projectId);
+                });
+            });
+
+            // Preview buttons
+            document.querySelectorAll('.btn-preview').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const slug = this.getAttribute('data-slug');
+                    const template = this.getAttribute('data-template');
+                    previewProject(slug, template);
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project-id');
+                    const coupleName = this.getAttribute('data-couple-name');
+                    deleteProject(projectId, coupleName);
+                });
+            });
         }
 
         function editProject(id) {
