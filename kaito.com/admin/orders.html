@@ -732,38 +732,54 @@
         // Load orders on page load
         async function loadOrders() {
             try {
+                console.log('🔄 Loading orders from:', TIMELESS_API_URL);
+
                 // Fetch projects from timeless_content with status 'in_progress' or 'completed'
-                const response = await fetch(`${TIMELESS_API_URL}?select=*&status=in.("in_progress","completed")&order=created_at.desc`, {
+                const url = `${TIMELESS_API_URL}?select=*&status=in.(in_progress,completed)&order=created_at.desc`;
+                console.log('📡 Fetching:', url);
+
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                         'apikey': SUPABASE_ANON_KEY
                     }
                 });
 
+                console.log('📥 Response status:', response.status);
+
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Error response:', errorText);
                     throw new Error(`Failed to load orders: ${response.status}`);
                 }
 
                 allOrders = await response.json();
-                console.log('Orders loaded from timeless_content:', allOrders);
+                console.log('✅ Orders loaded:', allOrders.length, 'items');
+                console.log('📊 Full data:', allOrders);
 
                 // Transform status: map 'in_progress' to 'in-progress' for UI
-                allOrders = allOrders.map(order => ({
-                    ...order,
-                    status: order.status === 'in_progress' ? 'in-progress' : order.status,
-                    // Use couple_names as the main identifier
-                    customer_name: order.couple_names || 'Unnamed',
-                    order_number: order.slug || order.id.substring(0, 8)
-                }));
+                allOrders = allOrders.map(order => {
+                    console.log('🔄 Mapping order:', order.couple_names, 'status:', order.status);
+                    return {
+                        ...order,
+                        status: order.status === 'in_progress' ? 'in-progress' : order.status,
+                        // Use couple_names as the main identifier
+                        customer_name: order.couple_names || 'Unnamed',
+                        order_number: order.slug || order.id.substring(0, 8)
+                    };
+                });
 
+                console.log('✅ Transformed orders:', allOrders);
                 renderOrders(allOrders);
             } catch (error) {
-                console.error('Error loading orders:', error);
+                console.error('❌ Error loading orders:', error);
                 showEmptyState();
             }
         }
 
         function renderOrders(orders) {
+            console.log('🎨 Rendering orders:', orders.length);
+
             // Clear all columns
             const columns = ['pending', 'in-progress', 'completed'];
             columns.forEach(status => {
@@ -779,15 +795,26 @@
 
             orders.forEach(order => {
                 const status = order.status || 'pending';
+                console.log('📦 Grouping order:', order.couple_names, '→', status);
                 if (groupedOrders[status]) {
                     groupedOrders[status].push(order);
+                } else {
+                    console.warn('⚠️ Unknown status:', status);
                 }
+            });
+
+            console.log('📊 Grouped orders:', {
+                pending: groupedOrders['pending'].length,
+                'in-progress': groupedOrders['in-progress'].length,
+                completed: groupedOrders['completed'].length
             });
 
             // Render each column
             Object.keys(groupedOrders).forEach(status => {
                 const columnElement = document.getElementById(`column-${status}`);
                 const orders = groupedOrders[status];
+
+                console.log(`✏️ Rendering ${status}:`, orders.length, 'items');
 
                 // Update count
                 document.getElementById(`count-${status}`).textContent = orders.length;
