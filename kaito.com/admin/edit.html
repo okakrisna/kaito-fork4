@@ -1263,98 +1263,39 @@
                 let result;
 
                 if (existingId) {
-                    // Update existing record using update_content_v2 function (new name bypasses cache)
-                    console.log('Updating existing record via update_content_v2:', existingId);
+                    // Update existing record using direct table update (bypasses all RPC/function cache issues)
+                    console.log('Updating existing record via direct table update:', existingId);
 
-                    // Prepare parameters with p_ prefix
-                    const params = {
-                        p_id: existingId,
-                        p_couple_names: data.couple_names || null,
-                        p_groom_full_name: data.groom_full_name || null,
-                        p_bride_full_name: data.bride_full_name || null,
-                        p_wedding_title: data.wedding_title || null,
-                        p_wedding_date: data.wedding_date || null,
-                        p_venue_name: data.venue_name || null,
-                        p_venue_address: data.venue_address || null,
-                        p_venue_maps: data.venue_maps || null,
-                        p_ceremony_time: data.ceremony_time || null,
-                        p_reception_time: data.reception_time || null,
-                        p_background_image: data.background_image || null,
-                        p_groom_photo: data.groom_photo || null,
-                        p_bride_photo: data.bride_photo || null,
-                        p_thank_you_message: data.thank_you_message || null,
-                        p_hero_title: data.hero_title || null,
-                        p_hero_image: data.hero_image || null,
-                        p_hero_background_image: data.hero_background_image || null,
-                        p_livestreaming_image: data.livestreaming_image || null,
-                        p_background_section_1: data.background_section_1 || null,
-                        p_background_section_1_size: data.background_section_1_size || null,
-                        p_background_section_1_position: data.background_section_1_position || null,
-                        p_background_section_2: data.background_section_2 || null,
-                        p_background_section_2_size: data.background_section_2_size || null,
-                        p_background_section_2_position: data.background_section_2_position || null,
-                        p_background_section_3: data.background_section_3 || null,
-                        p_background_section_3_size: data.background_section_3_size || null,
-                        p_background_section_3_position: data.background_section_3_position || null,
-                        p_background_section_4: data.background_section_4 || null,
-                        p_background_section_4_size: data.background_section_4_size || null,
-                        p_background_section_4_position: data.background_section_4_position || null,
-                        p_background_section_5: data.background_section_5 || null,
-                        p_background_section_5_size: data.background_section_5_size || null,
-                        p_background_section_5_position: data.background_section_5_position || null,
-                        p_gallery_images: data.gallery_images || null,
-                        p_price: data.price || null,
-                        p_template_name: data.template_name || null,
-                        p_slug: data.slug || null,
-                        p_status: data.status || null,
-                        p_password_protected: data.password_protected || null,
-                        p_invitation_password: data.invitation_password || null,
-                        p_is_published: data.is_published || null
-                    };
+                    const { data: updateResult, error: updateError } = await supabase
+                        .from('timeless_content')
+                        .update(data)
+                        .eq('id', existingId)
+                        .select()
+                        .single();
 
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/update_content_v2`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(params)
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('RPC update error:', errorText);
-                        throw new Error(`Failed to update data: ${errorText}`);
+                    if (updateError) {
+                        console.error('Direct update error:', updateError);
+                        throw new Error(`Failed to update data: ${updateError.message}`);
                     }
 
-                    result = await response.json();
+                    result = updateResult;
                     console.log('Update result:', result);
                 } else {
-                    // Insert new record using raw SQL function
-                    console.log('Inserting new record via RPC');
+                    // Insert new record using direct table insert (bypasses all RPC/function cache issues)
+                    console.log('Inserting new record via direct table insert');
 
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/raw_insert_timeless_content`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify({
-                            data: data
-                        })
-                    });
+                    const { data: insertResult, error: insertError } = await supabase
+                        .from('timeless_content')
+                        .insert(data)
+                        .select()
+                        .single();
 
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('RPC insert error:', errorText);
-                        throw new Error(`Failed to insert data: ${errorText}`);
+                    if (insertError) {
+                        console.error('Direct insert error:', insertError);
+                        throw new Error(`Failed to insert data: ${insertError.message}`);
                     }
 
-                    result = await response.json();
+                    result = insertResult;
                     console.log('Insert result:', result);
 
                     // Update the URL with the new ID
