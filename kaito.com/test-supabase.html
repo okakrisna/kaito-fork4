@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Connection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Testing Supabase Connection</h1>
+    <div id="result"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://qnrnkcdcojvsjgikmnaz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucm5rY2Rjb2p2c2pnaWttbmF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMjM2NjMsImV4cCI6MjA3OTY5OTY2M30.vKJt4gJ3ueqttT1H3IM-O-1ankDmy5mNqq24MXX7Y_U';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const resultDiv = document.getElementById('result');
+
+        async function testConnection() {
+            try {
+                resultDiv.innerHTML = '<p>Testing connection...</p>';
+
+                // Test 1: Get all data
+                const { data: allData, error: allError } = await supabase
+                    .from('timeless_content')
+                    .select('*');
+
+                if (allError) {
+                    resultDiv.innerHTML += `<p style="color: red">Error getting all data: ${allError.message}</p>`;
+                    console.error('All data error:', allError);
+                } else {
+                    resultDiv.innerHTML += `<p style="color: green">✓ Got ${allData.length} records</p>`;
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(allData, null, 2)}</pre>`;
+                }
+
+                // Test 2: Get specific slug
+                const { data: slugData, error: slugError } = await supabase
+                    .from('timeless_content')
+                    .select('*')
+                    .eq('slug', 'demo-elegant')
+                    .maybeSingle();
+
+                if (slugError) {
+                    resultDiv.innerHTML += `<p style="color: red">Error getting slug: ${slugError.message}</p>`;
+                    console.error('Slug error:', slugError);
+                } else if (!slugData) {
+                    resultDiv.innerHTML += `<p style="color: orange">No data found for slug 'demo-elegant'</p>`;
+                } else {
+                    resultDiv.innerHTML += `<p style="color: green">✓ Found data for slug 'demo-elegant'</p>`;
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(slugData, null, 2)}</pre>`;
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red">Exception: ${error.message}</p>`;
+                console.error('Test error:', error);
+            }
+        }
+
+        testConnection();
+    </script>
+</body>
+</html>
