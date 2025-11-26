@@ -1256,35 +1256,49 @@
                     data.gallery_images = [];
                 }
 
-                // Save using Supabase
-                let saveResult;
+                // Save using REST API directly (bypasses schema cache)
+                console.log('Saving data...');
+                console.log('Data to save:', data);
+
+                let response;
                 if (existingId) {
-                    // Update existing record
+                    // Update existing record using REST API
                     console.log('Updating record with ID:', existingId);
-                    console.log('Data to update:', data);
 
-                    saveResult = await supabase
-                        .from('timeless_content')
-                        .update(data)
-                        .eq('id', existingId);
-
-                    console.log('Update result:', saveResult);
+                    response = await fetch(`${REST_API_URL}?id=eq.${existingId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(data)
+                    });
                 } else {
-                    // Insert new record
+                    // Insert new record using REST API
                     console.log('Inserting new record');
-                    console.log('Data to insert:', data);
 
-                    saveResult = await supabase
-                        .from('timeless_content')
-                        .insert(data);
-
-                    console.log('Insert result:', saveResult);
+                    response = await fetch(REST_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(data)
+                    });
                 }
 
-                if (saveResult.error) {
-                    console.error('Supabase save error:', saveResult.error);
-                    throw new Error(`Failed to save data: ${saveResult.error.message}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('REST API save error:', errorText);
+                    throw new Error(`Failed to save data: ${errorText}`);
                 }
+
+                const result = await response.json();
+                console.log('Save result:', result);
 
                 console.log('✅ Data saved successfully!');
                 showAlert('✅ Data berhasil disimpan ke database! Refresh halaman timeless untuk melihat perubahan.', 'success');
