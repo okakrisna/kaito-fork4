@@ -476,9 +476,9 @@
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Get slug from URL parameter or default to 'elegant'
+        // Get slug from URL parameter or default to 'demo-elegant'
         const urlParams = new URLSearchParams(window.location.search);
-        const slug = urlParams.get('slug') || 'elegant';
+        const slug = urlParams.get('slug') || 'demo-elegant';
 
         // Load content from Supabase
         async function loadContent() {
