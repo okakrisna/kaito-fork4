@@ -478,11 +478,6 @@
                         <input type="text" id="couple_names" placeholder="e.g., John & Jane">
                         <p class="help-text">Display names for the couple</p>
                     </div>
-                    <div class="form-group">
-                        <label>💰 Price</label>
-                        <input type="number" id="price" placeholder="e.g., 500000" min="0" step="50000">
-                        <p class="help-text">Order price in Rupiah (for analytics & revenue tracking)</p>
-                    </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Groom Full Name</label>
@@ -1062,7 +1057,6 @@
 
                 // Basic Information
                 safeSetValue('couple_names', data.couple_names);
-                safeSetValue('price', data.price || 0);
                 safeSetValue('groom_full_name', data.groom_full_name);
                 safeSetValue('bride_full_name', data.bride_full_name);
                 safeSetValue('wedding_title', data.wedding_title || data.hero_title);
@@ -1200,7 +1194,6 @@
                 const data = {
                     template_name: document.getElementById('template_name').value,
                     couple_names: document.getElementById('couple_names').value,
-                    price: parseFloat(document.getElementById('price').value) || 0,
                     groom_full_name: document.getElementById('groom_full_name').value,
                     bride_full_name: document.getElementById('bride_full_name').value,
                     wedding_title: document.getElementById('wedding_title').value,
