@@ -1250,39 +1250,39 @@
                     data.gallery_images = [];
                 }
 
-                // Save to REST API
-                let saveResponse;
+                // Save using Supabase JS Client (more reliable with schema cache)
+                let saveResult;
                 if (existingId) {
                     // Update existing record
-                    saveResponse = await fetch(`${REST_API_URL}?id=eq.${existingId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(data)
-                    });
+                    console.log('Updating record with ID:', existingId);
+                    console.log('Data to update:', data);
+
+                    saveResult = await supabase
+                        .from('timeless_content')
+                        .update(data)
+                        .eq('id', existingId)
+                        .select();
+
+                    console.log('Update result:', saveResult);
                 } else {
                     // Insert new record
-                    saveResponse = await fetch(REST_API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(data)
-                    });
+                    console.log('Inserting new record');
+                    console.log('Data to insert:', data);
+
+                    saveResult = await supabase
+                        .from('timeless_content')
+                        .insert(data)
+                        .select();
+
+                    console.log('Insert result:', saveResult);
                 }
 
-                if (!saveResponse.ok) {
-                    const errorText = await saveResponse.text();
-                    throw new Error(`Failed to save data: ${errorText}`);
+                if (saveResult.error) {
+                    console.error('Supabase save error:', saveResult.error);
+                    throw new Error(`Failed to save data: ${saveResult.error.message}`);
                 }
 
+                console.log('✅ Data saved successfully!');
                 showAlert('✅ Data berhasil disimpan ke database! Refresh halaman timeless untuk melihat perubahan.', 'success');
                 btn.textContent = '✅ Berhasil Disimpan!';
 
