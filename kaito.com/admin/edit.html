@@ -1259,18 +1259,18 @@
                 // Save using Supabase
                 let saveResult;
                 if (existingId) {
-                    // Update existing record using RPC function (bypasses PostgREST schema cache)
+                    // Update existing record
                     console.log('Updating record with ID:', existingId);
                     console.log('Data to update:', data);
 
-                    saveResult = await supabase.rpc('update_timeless_content_with_price', {
-                        content_id: existingId,
-                        update_data: data
-                    });
+                    saveResult = await supabase
+                        .from('timeless_content')
+                        .update(data)
+                        .eq('id', existingId);
 
                     console.log('Update result:', saveResult);
                 } else {
-                    // Insert new record (schema cache not an issue for INSERT)
+                    // Insert new record
                     console.log('Inserting new record');
                     console.log('Data to insert:', data);
 
