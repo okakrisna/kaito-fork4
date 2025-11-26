@@ -1256,22 +1256,21 @@
                     data.gallery_images = [];
                 }
 
-                // Save using Supabase JS Client (more reliable with schema cache)
+                // Save using Supabase
                 let saveResult;
                 if (existingId) {
-                    // Update existing record
+                    // Update existing record using RPC function (bypasses PostgREST schema cache)
                     console.log('Updating record with ID:', existingId);
                     console.log('Data to update:', data);
 
-                    // Don't use .select() to avoid schema cache issues
-                    saveResult = await supabase
-                        .from('timeless_content')
-                        .update(data)
-                        .eq('id', existingId);
+                    saveResult = await supabase.rpc('update_timeless_content_with_price', {
+                        content_id: existingId,
+                        update_data: data
+                    });
 
                     console.log('Update result:', saveResult);
                 } else {
-                    // Insert new record
+                    // Insert new record (schema cache not an issue for INSERT)
                     console.log('Inserting new record');
                     console.log('Data to insert:', data);
 
