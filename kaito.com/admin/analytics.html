@@ -449,21 +449,66 @@
 
         async function loadSales() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/template_sales?select=*&order=sale_date.desc`, {
+                // Load manual sales
+                const manualResponse = await fetch(`${SUPABASE_URL}/rest/v1/template_sales?select=*&order=sale_date.desc`, {
                     headers: {
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                         'apikey': SUPABASE_ANON_KEY
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to load sales data');
+                if (!manualResponse.ok) {
+                    throw new Error('Failed to load manual sales data');
                 }
 
-                allSales = await response.json();
+                const manualSales = await manualResponse.json();
+
+                // Load completed orders from timeless_content
+                const ordersResponse = await fetch(`${SUPABASE_URL}/rest/v1/timeless_content?select=*&status=eq.completed&order=completed_at.desc`, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                if (!ordersResponse.ok) {
+                    throw new Error('Failed to load completed orders');
+                }
+
+                const completedOrders = await ordersResponse.json();
+
+                // Transform completed orders to sales format
+                const orderSales = completedOrders
+                    .filter(order => order.completed_at) // Only include orders with completed_at
+                    .map(order => ({
+                        id: `order-${order.id}`,
+                        template_name: order.template_name || 'timeless',
+                        couple_names: order.couple_names || 'Unnamed',
+                        sale_date: order.completed_at.split('T')[0], // Use completion date
+                        price: order.price || 0,
+                        notes: `Auto-generated from completed order`,
+                        source: 'order' // Mark as auto-generated
+                    }));
+
+                // Mark manual sales
+                const markedManualSales = manualSales.map(sale => ({
+                    ...sale,
+                    source: 'manual'
+                }));
+
+                // Combine both sources
+                allSales = [...markedManualSales, ...orderSales];
+
+                // Sort by date descending
+                allSales.sort((a, b) => new Date(b.sale_date) - new Date(a.sale_date));
+
                 filteredSales = allSales;
 
-                console.log('Sales loaded:', allSales.length);
+                console.log('Sales loaded:', {
+                    manual: manualSales.length,
+                    orders: orderSales.length,
+                    total: allSales.length
+                });
 
                 updateStats();
                 renderCharts();
@@ -580,14 +625,21 @@
             }
 
             tbody.innerHTML = filteredSales.map(sale => `
-                <tr>
-                    <td>${new Date(sale.sale_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                <tr style="${sale.source === 'order' ? 'background: #f0fdf4;' : ''}">
+                    <td>
+                        ${new Date(sale.sale_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        ${sale.source === 'order' ? '<br><span style="font-size: 11px; color: #10b981; font-weight: 600;">✓ Auto from Order</span>' : ''}
+                    </td>
                     <td><span class="template-badge ${sale.template_name}">${sale.template_name}</span></td>
                     <td>${sale.couple_names}</td>
                     <td>Rp ${parseFloat(sale.price || 0).toLocaleString('id-ID')}</td>
                     <td>${sale.notes || '-'}</td>
                     <td>
-                        <button onclick="deleteSale('${sale.id}')" style="background: #fc8181; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Delete</button>
+                        ${sale.source === 'manual' ? `
+                            <button onclick="deleteSale('${sale.id}')" style="background: #fc8181; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Delete</button>
+                        ` : `
+                            <span style="font-size: 11px; color: #64748b;">Auto-generated</span>
+                        `}
                     </td>
                 </tr>
             `).join('');
