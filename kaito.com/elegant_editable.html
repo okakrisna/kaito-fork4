@@ -483,19 +483,29 @@
         // Load content from Supabase
         async function loadContent() {
             try {
+                console.log('Loading content for slug:', slug);
+
                 const { data, error } = await supabase
                     .from('timeless_content')
                     .select('*')
                     .eq('slug', slug)
                     .maybeSingle();
 
-                if (error) throw error;
+                console.log('Supabase response:', { data, error });
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
 
                 if (data) {
+                    console.log('Data found, populating content...');
                     populateContent(data);
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('cover').style.display = 'flex';
+                    console.log('Content populated successfully!');
                 } else {
+                    console.warn('No data found for slug:', slug);
                     document.getElementById('loading').innerHTML = 'Wedding invitation not found. <a href="admin/edit.html">Create one?</a>';
                 }
             } catch (error) {
