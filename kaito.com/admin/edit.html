@@ -1256,39 +1256,53 @@
                     data.gallery_images = [];
                 }
 
-                // Save using Edge Function (completely bypasses PostgREST)
-                console.log('Saving data via Edge Function...');
+                // Save using direct Supabase client (RLS is disabled for testing)
+                console.log('Saving data via Supabase client...');
                 console.log('Data to save:', data);
 
-                // Add ID to data if updating
+                let result;
+
                 if (existingId) {
-                    data.id = existingId;
+                    // Update existing record
+                    console.log('Updating existing record:', existingId);
+                    const { data: updateData, error: updateError } = await supabase
+                        .from('timeless_content')
+                        .update(data)
+                        .eq('id', existingId)
+                        .select()
+                        .single();
+
+                    if (updateError) {
+                        console.error('Update error:', updateError);
+                        throw new Error(`Failed to update data: ${updateError.message}`);
+                    }
+
+                    result = updateData;
+                } else {
+                    // Insert new record
+                    console.log('Inserting new record');
+                    const { data: insertData, error: insertError } = await supabase
+                        .from('timeless_content')
+                        .insert([data])
+                        .select()
+                        .single();
+
+                    if (insertError) {
+                        console.error('Insert error:', insertError);
+                        throw new Error(`Failed to insert data: ${insertError.message}`);
+                    }
+
+                    result = insertData;
+
+                    // Update the URL with the new ID
+                    if (result && result.id) {
+                        const newUrl = `${window.location.pathname}?id=${result.id}`;
+                        window.history.pushState({}, '', newUrl);
+                        existingId = result.id;
+                    }
                 }
 
-                // Call Edge Function
-                const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/save-timeless-content`;
-                const response = await fetch(edgeFunctionUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Edge Function error:', errorData);
-                    throw new Error(`Failed to save data: ${errorData.error || response.statusText}`);
-                }
-
-                const result = await response.json();
                 console.log('Save result:', result);
-
-                if (!result.success) {
-                    throw new Error(`Failed to save data: ${result.error || 'Unknown error'}`);
-                }
 
                 console.log('✅ Data saved successfully!');
                 showAlert('✅ Data berhasil disimpan ke database! Refresh halaman timeless untuk melihat perubahan.', 'success');
