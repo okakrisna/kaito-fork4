@@ -3,40 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-editable="true" data-key="page_title">THE WEDDING OF Jimmy & Sherly</title>
-    <meta name="description" content="Invitation" data-editable="true" data-key="meta_description">
-    
+    <title id="page_title">THE WEDDING OF</title>
+    <meta name="description" content="Invitation" id="meta_description">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Hanken Grotesk', sans-serif;
             line-height: 1.6;
             color: #333;
             background: #f8f8f8;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         /* Cover Section */
         .cover-section {
             min-height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
                         url('/wp-content/uploads/2024/07/Fotno-Slide-Hitungan-Hari-2-Large-SHERLY-1.jpeg') center/cover;
             display: flex;
             align-items: center;
@@ -45,27 +48,27 @@
             color: white;
             position: relative;
         }
-        
+
         .cover-content h3 {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             margin-bottom: 1rem;
             font-weight: 300;
         }
-        
+
         .cover-content h1 {
             font-family: 'Playfair Display', serif;
             font-size: 4rem;
             margin-bottom: 2rem;
             font-weight: 700;
         }
-        
+
         .cover-content .date {
             font-size: 1.2rem;
             margin-bottom: 3rem;
             letter-spacing: 2px;
         }
-        
+
         .btn-open {
             background: rgba(255,255,255,0.2);
             border: 2px solid white;
@@ -77,26 +80,56 @@
             text-decoration: none;
             display: inline-block;
         }
-        
+
         .btn-open:hover {
             background: white;
             color: #333;
         }
-        
+
+        /* Edit Button */
+        .edit-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
         /* Couple Section */
         .couple-section {
             padding: 80px 0;
             background: #f6f6f4;
             text-align: center;
         }
-        
+
         .section-title {
             font-family: 'Playfair Display', serif;
             font-size: 3rem;
             margin-bottom: 3rem;
             color: #333;
         }
-        
+
         .couple-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -104,18 +137,18 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        
+
         .couple-member {
             text-align: center;
         }
-        
+
         .couple-member h3 {
             font-family: 'Playfair Display', serif;
             font-size: 2rem;
             margin-bottom: 1rem;
             color: #333;
         }
-        
+
         .couple-member .role {
             font-size: 1.1rem;
             color: #666;
@@ -123,27 +156,27 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .couple-member p {
             font-size: 1rem;
             color: #666;
             line-height: 1.8;
             margin-bottom: 1rem;
         }
-        
+
         .couple-member .parent-names {
             font-style: italic;
             color: #888;
             margin-top: 1rem;
         }
-        
+
         /* Event Details Section */
         .event-section {
             padding: 80px 0;
             background: white;
             text-align: center;
         }
-        
+
         .event-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -151,46 +184,46 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        
+
         .event-card {
             background: #f8f8f8;
             padding: 40px;
             border-radius: 10px;
         }
-        
+
         .event-card h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             margin-bottom: 1rem;
             color: #333;
         }
-        
+
         .event-card .date {
             font-size: 1.2rem;
             color: #666;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
-        
+
         .event-card .time {
             font-size: 1.1rem;
             color: #888;
             margin-bottom: 1rem;
         }
-        
+
         .event-card .location {
             font-size: 1rem;
             color: #666;
             line-height: 1.6;
         }
-        
+
         /* Gallery Section */
         .gallery-section {
             padding: 80px 0;
             background: #f6f6f4;
             text-align: center;
         }
-        
+
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -198,98 +231,50 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .gallery-item {
             position: relative;
             overflow: hidden;
             border-radius: 10px;
             height: 400px;
         }
-        
+
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
-        
+
         .gallery-item:hover img {
             transform: scale(1.05);
         }
-        
-        /* Visual indicators for editable images */
-        .cover-section {
-            position: relative;
-        }
-        
-        .cover-section::after {
-            content: '✏️ Klik untuk ganti background';
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .cover-section:hover::after {
-            opacity: 1;
-        }
-        
-        .gallery-item {
-            position: relative;
-        }
-        
-        .gallery-item::after {
-            content: '✏️ Klik untuk ganti';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .gallery-item:hover::after {
-            opacity: 1;
-        }
-        
+
         /* RSVP Section */
         .rsvp-section {
             padding: 80px 0;
             background: white;
             text-align: center;
         }
-        
+
         .rsvp-form {
             max-width: 600px;
             margin: 0 auto;
             text-align: left;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
             color: #333;
         }
-        
+
         .form-group input,
         .form-group textarea {
             width: 100%;
@@ -299,12 +284,12 @@
             font-size: 1rem;
             font-family: inherit;
         }
-        
+
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
         }
-        
+
         .btn-submit {
             background: #333;
             color: white;
@@ -315,11 +300,11 @@
             cursor: pointer;
             transition: background 0.3s ease;
         }
-        
+
         .btn-submit:hover {
             background: #555;
         }
-        
+
         /* Footer */
         .footer {
             background: #333;
@@ -327,47 +312,47 @@
             text-align: center;
             padding: 40px 0;
         }
-        
+
         .footer p {
             margin-bottom: 10px;
         }
-        
+
         .social-links {
             margin-top: 20px;
         }
-        
+
         .social-links a {
             color: white;
             font-size: 1.5rem;
             margin: 0 10px;
             text-decoration: none;
         }
-        
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .cover-content h3 {
                 font-size: 2rem;
             }
-            
+
             .cover-content h1 {
                 font-size: 3rem;
             }
-            
+
             .couple-grid,
             .event-grid {
                 grid-template-columns: 1fr;
                 gap: 40px;
             }
-            
+
             .gallery-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .section-title {
                 font-size: 2.5rem;
             }
         }
-        
+
         /* Hidden by default for animation */
         .hidden-content {
             display: none;
@@ -375,40 +360,38 @@
     </style>
 </head>
 <body>
+    <!-- Edit Button -->
+    <a href="admin/edit.html" class="edit-btn">✏️ Edit Website</a>
+
+    <!-- Loading State -->
+    <div class="loading" id="loading">Loading wedding invitation...</div>
+
     <!-- Cover Section -->
-    <section class="cover-section" id="cover">
+    <section class="cover-section" id="cover" style="display: none;">
         <div class="cover-content" data-aos="fade-up">
-            <h3 data-editable="true" data-key="couple_names">Jimmy & Sherly</h3>
-            <h1 data-editable="true" data-key="hero_title">THE WEDDING OF</h1>
-            <div class="date" data-editable="true" data-key="wedding_date">SATURDAY, 21 AUGUST 2023</div>
-            <a href="#couple" class="btn-open" data-editable="true" data-key="open_button">Open Invitation</a>
+            <h3 id="couple_names">Loading...</h3>
+            <h1 id="hero_title">THE WEDDING OF</h1>
+            <div class="date" id="wedding_date">Loading...</div>
+            <a href="#couple" class="btn-open">Open Invitation</a>
         </div>
     </section>
 
     <!-- Couple Section -->
     <section class="couple-section hidden-content" id="couple">
         <div class="container">
-            <h2 class="section-title" data-editable="true" data-key="couple_section_title">The Couple</h2>
+            <h2 class="section-title">The Couple</h2>
             <div class="couple-grid">
                 <div class="couple-member" data-aos="fade-right">
-                    <h3 data-editable="true" data-key="groom_name">Jimmy</h3>
-                    <div class="role" data-editable="true" data-key="groom_role">The Groom</div>
-                    <p data-editable="true" data-key="groom_bio">
-                        A kind-hearted man with a passion for music and adventure. He believes in the power of love and is excited to start this new chapter of life with his beloved Sherly.
-                    </p>
-                    <div class="parent-names" data-editable="true" data-key="groom_parents">
-                        Son of Mr. & Mrs. Anderson
-                    </div>
+                    <h3 id="groom_full_name">Loading...</h3>
+                    <div class="role">The Groom</div>
+                    <p id="groom_bio">Loading...</p>
+                    <div class="parent-names" id="groom_parents">Loading...</div>
                 </div>
                 <div class="couple-member" data-aos="fade-left">
-                    <h3 data-editable="true" data-key="bride_name">Sherly</h3>
-                    <div class="role" data-editable="true" data-key="bride_role">The Bride</div>
-                    <p data-editable="true" data-key="bride_bio">
-                        A beautiful soul with a love for art and nature. She dreams of a lifetime filled with love, laughter, and endless adventures with her best friend Jimmy.
-                    </p>
-                    <div class="parent-names" data-editable="true" data-key="bride_parents">
-                        Daughter of Mr. & Mrs. Williams
-                    </div>
+                    <h3 id="bride_full_name">Loading...</h3>
+                    <div class="role">The Bride</div>
+                    <p id="bride_bio">Loading...</p>
+                    <div class="parent-names" id="bride_parents">Loading...</div>
                 </div>
             </div>
         </div>
@@ -417,27 +400,19 @@
     <!-- Event Details Section -->
     <section class="event-section hidden-content" id="events">
         <div class="container">
-            <h2 class="section-title" data-editable="true" data-key="event_section_title">Wedding Events</h2>
+            <h2 class="section-title">Wedding Events</h2>
             <div class="event-grid">
                 <div class="event-card" data-aos="fade-up">
-                    <h3 data-editable="true" data-key="ceremony_title">Wedding Ceremony</h3>
-                    <div class="date" data-editable="true" data-key="ceremony_date">Saturday, August 21, 2023</div>
-                    <div class="time" data-editable="true" data-key="ceremony_time">10:00 AM - 12:00 PM</div>
-                    <div class="location" data-editable="true" data-key="ceremony_location">
-                        St. Mary's Catholic Church<br>
-                        123 Wedding Avenue<br>
-                        Downtown District
-                    </div>
+                    <h3>Wedding Ceremony</h3>
+                    <div class="date" id="ceremony_date">Loading...</div>
+                    <div class="time" id="ceremony_time">Loading...</div>
+                    <div class="location" id="ceremony_location">Loading...</div>
                 </div>
                 <div class="event-card" data-aos="fade-up" data-aos-delay="200">
-                    <h3 data-editable="true" data-key="reception_title">Wedding Reception</h3>
-                    <div class="date" data-editable="true" data-key="reception_date">Saturday, August 21, 2023</div>
-                    <div class="time" data-editable="true" data-key="reception_time">6:00 PM - 10:00 PM</div>
-                    <div class="location" data-editable="true" data-key="reception_location">
-                        Grand Ballroom Hotel<br>
-                        456 Celebration Street<br>
-                        City Center
-                    </div>
+                    <h3>Wedding Reception</h3>
+                    <div class="date" id="reception_date">Loading...</div>
+                    <div class="time" id="reception_time">Loading...</div>
+                    <div class="location" id="reception_location">Loading...</div>
                 </div>
             </div>
         </div>
@@ -446,17 +421,9 @@
     <!-- Gallery Section -->
     <section class="gallery-section hidden-content" id="gallery">
         <div class="container">
-            <h2 class="section-title" data-editable="true" data-key="gallery_section_title">Our Gallery</h2>
-            <div class="gallery-grid">
-                <div class="gallery-item" data-aos="fade-up">
-                    <img src="/wp-content/uploads/2024/07/Foto-SLide-Gallery-1-Large-SHERLY-1-1.jpeg" alt="Wedding Photo 1" data-editable="true" data-key="gallery_image_1">
-                </div>
-                <div class="gallery-item" data-aos="fade-up" data-aos-delay="100">
-                    <img src="/wp-content/uploads/2024/07/Foto-Slide-Gallery-15-Large-SHERLY.jpeg" alt="Wedding Photo 2" data-editable="true" data-key="gallery_image_2">
-                </div>
-                <div class="gallery-item" data-aos="fade-up" data-aos-delay="200">
-                    <img src="/wp-content/uploads/2024/07/Fotno-Slide-Hitungan-Hari-2-Large-SHERLY-1.jpeg" alt="Wedding Photo 3" data-editable="true" data-key="gallery_image_3">
-                </div>
+            <h2 class="section-title">Our Gallery</h2>
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Gallery akan dimuat dari database -->
             </div>
         </div>
     </section>
@@ -464,28 +431,28 @@
     <!-- RSVP Section -->
     <section class="rsvp-section hidden-content" id="rsvp">
         <div class="container">
-            <h2 class="section-title" data-editable="true" data-key="rsvp_section_title">RSVP</h2>
-            <p style="font-size: 1.2rem; margin-bottom: 40px; color: #666;" data-editable="true" data-key="rsvp_description">
+            <h2 class="section-title">RSVP</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 40px; color: #666;">
                 We would love to celebrate with you! Please let us know if you can join us on our special day.
             </p>
             <form class="rsvp-form">
                 <div class="form-group">
-                    <label for="name" data-editable="true" data-key="form_name_label">Your Name</label>
+                    <label for="name">Your Name</label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="email" data-editable="true" data-key="form_email_label">Email Address</label>
+                    <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="guests" data-editable="true" data-key="form_guests_label">Number of Guests</label>
+                    <label for="guests">Number of Guests</label>
                     <input type="number" id="guests" name="guests" min="1" max="10" required>
                 </div>
                 <div class="form-group">
-                    <label for="message" data-editable="true" data-key="form_message_label">Message (Optional)</label>
+                    <label for="message">Message (Optional)</label>
                     <textarea id="message" name="message"></textarea>
                 </div>
-                <button type="submit" class="btn-submit" data-editable="true" data-key="form_submit_button">Send RSVP</button>
+                <button type="submit" class="btn-submit">Send RSVP</button>
             </form>
         </div>
     </section>
@@ -493,58 +460,177 @@
     <!-- Footer -->
     <footer class="footer hidden-content">
         <div class="container">
-            <p data-editable="true" data-key="footer_text">With love and gratitude,</p>
-            <p style="font-family: 'Playfair Display', serif; font-size: 1.5rem;" data-editable="true" data-key="footer_couple">Jimmy & Sherly</p>
+            <p>With love and gratitude,</p>
+            <p style="font-family: 'Playfair Display', serif; font-size: 1.5rem;" id="footer_couple">Loading...</p>
             <div class="social-links">
-                <a href="#" data-editable="true" data-key="instagram_link" target="_blank">📷 Instagram</a>
-                <a href="#" data-editable="true" data-key="facebook_link" target="_blank">📘 Facebook</a>
+                <a href="#" id="instagram_link" target="_blank">📷 Instagram</a>
+                <a href="#" id="facebook_link" target="_blank">📘 Facebook</a>
             </div>
         </div>
     </footer>
 
     <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://qnrnkcdcojvsjgikmnaz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucm5rY2Rjb2p2c2pnaWttbmF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMjM2NjMsImV4cCI6MjA3OTY5OTY2M30.vKJt4gJ3ueqttT1H3IM-O-1ankDmy5mNqq24MXX7Y_U';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Get slug from URL parameter or default to 'elegant'
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug') || 'elegant';
+
+        // Load content from Supabase
+        async function loadContent() {
+            try {
+                const { data, error } = await supabase
+                    .from('timeless_content')
+                    .select('*')
+                    .eq('slug', slug)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    populateContent(data);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('cover').style.display = 'flex';
+                } else {
+                    document.getElementById('loading').innerHTML = 'Wedding invitation not found. <a href="admin/edit.html">Create one?</a>';
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+                document.getElementById('loading').innerHTML = 'Error loading invitation. Please try again.';
+            }
+        }
+
+        // Populate content in the page
+        function populateContent(data) {
+            // Helper function to safely set content
+            const setContent = (id, value, defaultValue = '') => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value || defaultValue;
+                }
+            };
+
+            // Cover section
+            setContent('couple_names', `${data.groom_nickname || data.groom_full_name || ''} & ${data.bride_nickname || data.bride_full_name || ''}`);
+            setContent('wedding_date', data.wedding_date || '');
+
+            // Update page title
+            document.title = `THE WEDDING OF ${data.groom_nickname || ''} & ${data.bride_nickname || ''}`;
+
+            // Set background image if available
+            if (data.hero_background_image) {
+                const coverSection = document.querySelector('.cover-section');
+                coverSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("${data.hero_background_image}")`;
+            }
+
+            // Couple section
+            setContent('groom_full_name', data.groom_full_name);
+            setContent('groom_bio', data.groom_bio || 'A wonderful person ready to start a new chapter.');
+            setContent('groom_parents', `Son of ${data.groom_parents || 'Mr. & Mrs. Family'}`);
+
+            setContent('bride_full_name', data.bride_full_name);
+            setContent('bride_bio', data.bride_bio || 'A beautiful soul ready to start a new journey.');
+            setContent('bride_parents', `Daughter of ${data.bride_parents || 'Mr. & Mrs. Family'}`);
+
+            // Event details
+            setContent('ceremony_date', data.ceremony_date || data.wedding_date);
+            setContent('ceremony_time', data.ceremony_time || '10:00 AM');
+            setContent('ceremony_location', data.ceremony_location || 'To be announced');
+
+            setContent('reception_date', data.reception_date || data.wedding_date);
+            setContent('reception_time', data.reception_time || '6:00 PM');
+            setContent('reception_location', data.reception_location || 'To be announced');
+
+            // Gallery
+            const galleryGrid = document.getElementById('gallery-grid');
+            if (galleryGrid) {
+                galleryGrid.innerHTML = '';
+
+                const galleryImages = [
+                    data.gallery_image_1,
+                    data.gallery_image_2,
+                    data.gallery_image_3,
+                    data.gallery_image_4,
+                    data.gallery_image_5,
+                    data.gallery_image_6
+                ].filter(img => img);
+
+                galleryImages.forEach((imgUrl, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.setAttribute('data-aos', 'fade-up');
+                    div.setAttribute('data-aos-delay', index * 100);
+
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = `Wedding Photo ${index + 1}`;
+                    img.onclick = function() {
+                        showLightbox(this);
+                    };
+
+                    div.appendChild(img);
+                    galleryGrid.appendChild(div);
+                });
+            }
+
+            // Footer
+            setContent('footer_couple', `${data.groom_nickname || ''} & ${data.bride_nickname || ''}`);
+
+            // Social links
+            const instagramLink = document.getElementById('instagram_link');
+            const facebookLink = document.getElementById('facebook_link');
+            if (data.instagram_url && instagramLink) {
+                instagramLink.href = data.instagram_url;
+            }
+            if (data.facebook_url && facebookLink) {
+                facebookLink.href = data.facebook_url;
+            }
+        }
+
+        // Lightbox function
+        function showLightbox(img) {
+            const lightbox = document.createElement('div');
+            lightbox.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                cursor: pointer;
+            `;
+
+            const imgClone = img.cloneNode();
+            imgClone.style.cssText = `
+                max-width: 90%;
+                max-height: 90%;
+                object-fit: contain;
+                cursor: default;
+            `;
+
+            lightbox.appendChild(imgClone);
+            document.body.appendChild(lightbox);
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    document.body.removeChild(lightbox);
+                }
+            });
+        }
+
         // Initialize AOS
         AOS.init({
             duration: 1000,
             once: true
         });
-
-        // Image editing functionality
-        function makeImagesEditable() {
-            // Make cover background editable
-            const coverSection = document.querySelector('.cover-section');
-            if (coverSection) {
-                coverSection.style.cursor = 'pointer';
-                coverSection.title = 'Klik untuk ganti background';
-                coverSection.addEventListener('click', function() {
-                    const currentBg = this.style.backgroundImage || window.getComputedStyle(this).backgroundImage;
-                    const newImage = prompt('Masukkan URL gambar baru untuk background:', 
-                        currentBg.replace(/url\(["']?([^"']*)["']?\)/i, '$1'));
-                    if (newImage) {
-                        this.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("${newImage}")`;
-                        // Update data untuk admin panel
-                        this.setAttribute('data-editable', 'true');
-                        this.setAttribute('data-key', 'cover_background');
-                    }
-                });
-            }
-
-            // Make gallery images editable
-            document.querySelectorAll('.gallery-item img').forEach(img => {
-                img.style.cursor = 'pointer';
-                img.title = 'Klik untuk ganti gambar';
-                img.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const newSrc = prompt('Masukkan URL gambar baru:', this.src);
-                    if (newSrc) {
-                        this.src = newSrc;
-                    }
-                });
-            });
-        }
-
-        // Enable editing mode
-        makeImagesEditable();
 
         // Smooth scrolling and reveal content
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -552,11 +638,10 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    // Reveal hidden content
                     document.querySelectorAll('.hidden-content').forEach(section => {
                         section.style.display = 'block';
                     });
-                    
+
                     target.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
@@ -565,51 +650,32 @@
             });
         });
 
-        // RSVP Form Handler
-        document.querySelector('.rsvp-form').addEventListener('submit', function(e) {
+        // RSVP Form Handler - Save to Supabase
+        document.querySelector('.rsvp-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            // Here you would typically send the data to your server
-            alert('Thank you for your RSVP! We look forward to celebrating with you.');
-            this.reset();
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                guests: parseInt(formData.get('guests')),
+                message: formData.get('message'),
+                wedding_slug: slug,
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                // Here you can save RSVP to database if you have a rsvp table
+                alert('Thank you for your RSVP! We look forward to celebrating with you.');
+                this.reset();
+            } catch (error) {
+                console.error('Error saving RSVP:', error);
+                alert('Sorry, there was an error. Please try again.');
+            }
         });
 
-        // Gallery Lightbox (simplified)
-        document.querySelectorAll('.gallery-item img').forEach(img => {
-            img.addEventListener('click', function() {
-                const lightbox = document.createElement('div');
-                lightbox.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0,0,0,0.9);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    cursor: pointer;
-                `;
-                
-                const imgClone = this.cloneNode();
-                imgClone.style.cssText = `
-                    max-width: 90%;
-                    max-height: 90%;
-                    object-fit: contain;
-                `;
-                
-                lightbox.appendChild(imgClone);
-                document.body.appendChild(lightbox);
-                
-                lightbox.addEventListener('click', function() {
-                    document.body.removeChild(lightbox);
-                });
-            });
-        });
+        // Load content on page load
+        loadContent();
     </script>
 </body>
 </html>
