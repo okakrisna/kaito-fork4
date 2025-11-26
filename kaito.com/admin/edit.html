@@ -1256,43 +1256,41 @@
                     data.gallery_images = [];
                 }
 
-                // Save using direct Supabase client (RLS is disabled for testing)
-                console.log('Saving data via Supabase client...');
+                // Save using RPC function (bypasses PostgREST schema cache completely)
+                console.log('Saving data via RPC function...');
                 console.log('Data to save:', data);
 
                 let result;
 
                 if (existingId) {
-                    // Update existing record
-                    console.log('Updating existing record:', existingId);
-                    const { data: updateData, error: updateError } = await supabase
-                        .from('timeless_content')
-                        .update(data)
-                        .eq('id', existingId)
-                        .select()
-                        .single();
+                    // Update existing record using raw SQL function
+                    console.log('Updating existing record via RPC:', existingId);
+                    const { data: rpcData, error: rpcError } = await supabase
+                        .rpc('raw_update_timeless_content', {
+                            record_id: existingId,
+                            data: data
+                        });
 
-                    if (updateError) {
-                        console.error('Update error:', updateError);
-                        throw new Error(`Failed to update data: ${updateError.message}`);
+                    if (rpcError) {
+                        console.error('RPC update error:', rpcError);
+                        throw new Error(`Failed to update data: ${rpcError.message}`);
                     }
 
-                    result = updateData;
+                    result = rpcData;
                 } else {
-                    // Insert new record
-                    console.log('Inserting new record');
-                    const { data: insertData, error: insertError } = await supabase
-                        .from('timeless_content')
-                        .insert([data])
-                        .select()
-                        .single();
+                    // Insert new record using raw SQL function
+                    console.log('Inserting new record via RPC');
+                    const { data: rpcData, error: rpcError } = await supabase
+                        .rpc('raw_insert_timeless_content', {
+                            data: data
+                        });
 
-                    if (insertError) {
-                        console.error('Insert error:', insertError);
-                        throw new Error(`Failed to insert data: ${insertError.message}`);
+                    if (rpcError) {
+                        console.error('RPC insert error:', rpcError);
+                        throw new Error(`Failed to insert data: ${rpcError.message}`);
                     }
 
-                    result = insertData;
+                    result = rpcData;
 
                     // Update the URL with the new ID
                     if (result && result.id) {
