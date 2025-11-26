@@ -1256,48 +1256,67 @@
                     data.gallery_images = [];
                 }
 
-                // Save using REST API directly (bypasses schema cache)
-                console.log('Saving data...');
+                // Save using stored procedure (bypasses schema cache completely)
+                console.log('Saving data via stored procedure...');
                 console.log('Data to save:', data);
 
-                let response;
-                if (existingId) {
-                    // Update existing record using REST API
-                    console.log('Updating record with ID:', existingId);
+                // Prepare parameters for the stored procedure
+                const params = {
+                    p_id: existingId || null,
+                    p_couple_names: data.couple_names || '',
+                    p_groom_full_name: data.groom_full_name || '',
+                    p_bride_full_name: data.bride_full_name || '',
+                    p_wedding_title: data.wedding_title || '',
+                    p_wedding_date: data.wedding_date || '',
+                    p_venue_name: data.venue_name || '',
+                    p_venue_address: data.venue_address || '',
+                    p_venue_maps: data.venue_maps || '',
+                    p_ceremony_time: data.ceremony_time || '',
+                    p_reception_time: data.reception_time || '',
+                    p_background_image: data.background_image || '',
+                    p_groom_photo: data.groom_photo || '',
+                    p_bride_photo: data.bride_photo || '',
+                    p_thank_you_message: data.thank_you_message || '',
+                    p_hero_title: data.hero_title || '',
+                    p_hero_image: data.hero_image || '',
+                    p_hero_background_image: data.hero_background_image || null,
+                    p_livestreaming_image: data.livestreaming_image || null,
+                    p_background_section_1: data.background_section_1 || '',
+                    p_background_section_1_size: data.background_section_1_size || 'cover',
+                    p_background_section_1_position: data.background_section_1_position || 'center center',
+                    p_background_section_2: data.background_section_2 || '',
+                    p_background_section_2_size: data.background_section_2_size || 'cover',
+                    p_background_section_2_position: data.background_section_2_position || 'center center',
+                    p_background_section_3: data.background_section_3 || '',
+                    p_background_section_3_size: data.background_section_3_size || 'cover',
+                    p_background_section_3_position: data.background_section_3_position || 'center center',
+                    p_background_section_4: data.background_section_4 || '',
+                    p_background_section_4_size: data.background_section_4_size || 'cover',
+                    p_background_section_4_position: data.background_section_4_position || 'center center',
+                    p_background_section_5: data.background_section_5 || '',
+                    p_background_section_5_size: data.background_section_5_size || 'cover',
+                    p_background_section_5_position: data.background_section_5_position || 'center center',
+                    p_gallery_images: data.gallery_images || [],
+                    p_price: parseFloat(data.price) || 0,
+                    p_template_name: data.template_name || 'timeless',
+                    p_slug: data.slug || '',
+                    p_status: data.status || 'draft',
+                    p_password_protected: data.password_protected || false,
+                    p_invitation_password: data.invitation_password || '',
+                    p_is_published: data.is_published || false
+                };
 
-                    response = await fetch(`${REST_API_URL}?id=eq.${existingId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                } else {
-                    // Insert new record using REST API
-                    console.log('Inserting new record');
+                console.log('Calling stored procedure with params:', params);
 
-                    response = await fetch(REST_API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(data)
-                    });
+                // Call the stored procedure using Supabase RPC
+                const { data: result, error: rpcError } = await supabase
+                    .rpc('update_timeless_content', params);
+
+                if (rpcError) {
+                    console.error('RPC error:', rpcError);
+                    throw new Error(`Failed to save data: ${rpcError.message}`);
                 }
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('REST API save error:', errorText);
-                    throw new Error(`Failed to save data: ${errorText}`);
-                }
-
-                const result = await response.json();
                 console.log('Save result:', result);
 
                 console.log('✅ Data saved successfully!');
