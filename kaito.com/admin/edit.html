@@ -1256,8 +1256,8 @@
                     data.gallery_images = [];
                 }
 
-                // Save using RPC function (bypasses PostgREST schema cache completely)
-                console.log('Saving data via RPC function...');
+                // Save using direct fetch to RPC endpoint (bypasses Supabase client cache)
+                console.log('Saving data via direct RPC fetch...');
                 console.log('Data to save:', data);
 
                 let result;
@@ -1265,32 +1265,54 @@
                 if (existingId) {
                     // Update existing record using raw SQL function
                     console.log('Updating existing record via RPC:', existingId);
-                    const { data: rpcData, error: rpcError } = await supabase
-                        .rpc('raw_update_timeless_content', {
+
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/raw_update_timeless_content`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify({
                             record_id: existingId,
                             data: data
-                        });
+                        })
+                    });
 
-                    if (rpcError) {
-                        console.error('RPC update error:', rpcError);
-                        throw new Error(`Failed to update data: ${rpcError.message}`);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('RPC update error:', errorText);
+                        throw new Error(`Failed to update data: ${errorText}`);
                     }
 
-                    result = rpcData;
+                    result = await response.json();
+                    console.log('Update result:', result);
                 } else {
                     // Insert new record using raw SQL function
                     console.log('Inserting new record via RPC');
-                    const { data: rpcData, error: rpcError } = await supabase
-                        .rpc('raw_insert_timeless_content', {
-                            data: data
-                        });
 
-                    if (rpcError) {
-                        console.error('RPC insert error:', rpcError);
-                        throw new Error(`Failed to insert data: ${rpcError.message}`);
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/raw_insert_timeless_content`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify({
+                            data: data
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('RPC insert error:', errorText);
+                        throw new Error(`Failed to insert data: ${errorText}`);
                     }
 
-                    result = rpcData;
+                    result = await response.json();
+                    console.log('Insert result:', result);
 
                     // Update the URL with the new ID
                     if (result && result.id) {
