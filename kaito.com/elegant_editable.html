@@ -514,50 +514,64 @@
                 }
             };
 
+            const setHTML = (id, value, defaultValue = '') => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = value || defaultValue;
+                }
+            };
+
             // Cover section
-            setContent('couple_names', `${data.groom_nickname || data.groom_full_name || ''} & ${data.bride_nickname || data.bride_full_name || ''}`);
+            const groomName = data.groom_full_name ? data.groom_full_name.split(' ')[0] : 'Groom';
+            const brideName = data.bride_full_name ? data.bride_full_name.split(' ')[0] : 'Bride';
+            setContent('couple_names', `${groomName} & ${brideName}`);
             setContent('wedding_date', data.wedding_date || '');
 
             // Update page title
-            document.title = `THE WEDDING OF ${data.groom_nickname || ''} & ${data.bride_nickname || ''}`;
+            document.title = `THE WEDDING OF ${groomName} & ${brideName}`;
 
             // Set background image if available
-            if (data.hero_background_image) {
+            if (data.background_image || data.hero_image) {
                 const coverSection = document.querySelector('.cover-section');
-                coverSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("${data.hero_background_image}")`;
+                const bgImage = data.background_image || data.hero_image;
+                coverSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("${bgImage}")`;
             }
 
             // Couple section
-            setContent('groom_full_name', data.groom_full_name);
+            setContent('groom_full_name', data.groom_full_name || 'Groom');
             setContent('groom_bio', data.groom_bio || 'A wonderful person ready to start a new chapter.');
-            setContent('groom_parents', `Son of ${data.groom_parents || 'Mr. & Mrs. Family'}`);
+            setContent('groom_parents', data.groom_parents || 'Son of Mr. & Mrs. Family');
 
-            setContent('bride_full_name', data.bride_full_name);
+            setContent('bride_full_name', data.bride_full_name || 'Bride');
             setContent('bride_bio', data.bride_bio || 'A beautiful soul ready to start a new journey.');
-            setContent('bride_parents', `Daughter of ${data.bride_parents || 'Mr. & Mrs. Family'}`);
+            setContent('bride_parents', data.bride_parents || 'Daughter of Mr. & Mrs. Family');
 
             // Event details
-            setContent('ceremony_date', data.ceremony_date || data.wedding_date);
+            setContent('ceremony_date', data.wedding_date || 'To be announced');
             setContent('ceremony_time', data.ceremony_time || '10:00 AM');
-            setContent('ceremony_location', data.ceremony_location || 'To be announced');
+            setHTML('ceremony_location', data.venue_name ? `${data.venue_name}<br>${data.venue_address || ''}` : 'To be announced');
 
-            setContent('reception_date', data.reception_date || data.wedding_date);
+            setContent('reception_date', data.wedding_date || 'To be announced');
             setContent('reception_time', data.reception_time || '6:00 PM');
-            setContent('reception_location', data.reception_location || 'To be announced');
+            setHTML('reception_location', data.venue_name ? `${data.venue_name}<br>${data.venue_address || ''}` : 'To be announced');
 
             // Gallery
             const galleryGrid = document.getElementById('gallery-grid');
             if (galleryGrid) {
                 galleryGrid.innerHTML = '';
 
-                const galleryImages = [
-                    data.gallery_image_1,
-                    data.gallery_image_2,
-                    data.gallery_image_3,
-                    data.gallery_image_4,
-                    data.gallery_image_5,
-                    data.gallery_image_6
-                ].filter(img => img);
+                let galleryImages = [];
+                if (data.gallery_images) {
+                    // gallery_images is jsonb array
+                    galleryImages = Array.isArray(data.gallery_images) ? data.gallery_images : [];
+                } else {
+                    // Fallback to individual fields if they exist
+                    galleryImages = [
+                        data.gallery_image_1,
+                        data.gallery_image_2,
+                        data.gallery_image_3
+                    ].filter(img => img);
+                }
 
                 galleryImages.forEach((imgUrl, index) => {
                     const div = document.createElement('div');
@@ -578,7 +592,7 @@
             }
 
             // Footer
-            setContent('footer_couple', `${data.groom_nickname || ''} & ${data.bride_nickname || ''}`);
+            setContent('footer_couple', `${groomName} & ${brideName}`);
 
             // Social links
             const instagramLink = document.getElementById('instagram_link');
