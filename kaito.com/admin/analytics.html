@@ -478,20 +478,22 @@
                 let completedOrders = [];
                 try {
                     console.log('Fetching completed orders using Supabase client...');
-                    // Query without price first to avoid column error
+                    // Query ALL columns with * to avoid column name issues
                     const { data, error } = await supabase
                         .from('timeless_content')
-                        .select('id, couple_names, template_name, completed_at, status')
-                        .eq('status', 'completed')
-                        .order('completed_at', { ascending: false, nullsFirst: false });
+                        .select('*')
+                        .eq('status', 'completed');
 
                     if (error) {
                         console.error('Supabase error:', error);
                     } else {
-                        // Add default price of 0 for now (will be set manually in admin)
+                        // Transform and add defaults
                         completedOrders = (data || []).map(order => ({
-                            ...order,
-                            price: 0
+                            id: order.id,
+                            couple_names: order.couple_names || 'Unknown',
+                            template_name: order.template_name || 'timeless',
+                            completed_at: order.completed_at || order.created_at,
+                            price: order.price || 0
                         }));
                         console.log('Completed orders loaded:', completedOrders.length);
                         console.log('Orders data:', completedOrders);
