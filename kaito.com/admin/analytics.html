@@ -309,42 +309,78 @@
             background: #3182ce;
         }
 
+        .calendar-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .calendar-left {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .calendar-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-nav-small {
+            padding: 8px 12px;
+            background: #f7fafc;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-nav-small:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
         #calendar-container {
-            padding: 15px;
-            max-width: 800px;
-            margin: 0 auto;
+            padding: 0;
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-top: 15px;
+            gap: 8px;
         }
 
         .calendar-header {
             text-align: center;
             font-weight: 600;
-            padding: 10px;
-            background: #edf2f7;
-            border-radius: 6px;
-            color: #2d3748;
+            padding: 12px;
+            background: white;
+            color: #718096;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .calendar-day {
             aspect-ratio: 1;
-            padding: 6px;
+            padding: 8px 4px;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
-            background: white;
-            min-height: 60px;
+            background: #f7fafc;
+            min-height: 70px;
         }
 
         .calendar-day:hover {
@@ -362,21 +398,26 @@
             background: #ebf8ff;
         }
 
+        .calendar-day.selected {
+            border: 2px solid #4299e1;
+            background: #bee3f8;
+        }
+
         .calendar-day .date-number {
             font-weight: 600;
-            font-size: 12px;
-            margin-bottom: 3px;
+            font-size: 14px;
+            margin-bottom: 5px;
             color: #2d3748;
         }
 
         .calendar-day .sales-badge {
             background: #48bb78;
             color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
             font-weight: 600;
-            margin-top: auto;
+            margin-top: 5px;
         }
 
         .calendar-day .sales-badge.multiple {
@@ -419,6 +460,115 @@
             font-size: 14px;
             line-height: 1.6;
             margin: 0;
+        }
+
+        .calendar-right {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 500px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 400px;
+            text-align: center;
+        }
+
+        .empty-state svg {
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .day-detail-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .day-detail-header h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .day-detail-header .date-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .sale-item {
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .sale-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .sale-item h4 {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .sale-item .price {
+            color: #48bb78;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .sale-item .template-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #edf2f7;
+            color: #4a5568;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .sale-item .notes {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        @media (max-width: 1200px) {
+            .calendar-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-right {
+                position: relative;
+                top: 0;
+            }
         }
     </style>
 </head>
@@ -481,15 +631,31 @@
             </div>
 
             <div class="chart-section">
-                <div class="chart-header">
-                    <h2>Sales Calendar</h2>
-                    <div class="calendar-nav">
-                        <button class="btn-nav" onclick="previousMonth()">&larr; Previous</button>
-                        <span id="current-month" style="font-weight: 600; font-size: 16px;"></span>
-                        <button class="btn-nav" onclick="nextMonth()">Next &rarr;</button>
+                <h2 style="margin-bottom: 20px;">Sales Calendar</h2>
+                <div class="calendar-layout">
+                    <div class="calendar-left">
+                        <div class="calendar-header-nav">
+                            <button class="btn-nav-small" onclick="previousMonth()">&larr;</button>
+                            <span id="current-month" style="font-weight: 600; font-size: 18px;"></span>
+                            <button class="btn-nav-small" onclick="nextMonth()">&rarr;</button>
+                        </div>
+                        <div id="calendar-container"></div>
+                    </div>
+                    <div class="calendar-right">
+                        <div id="day-details">
+                            <div class="empty-state">
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <h3>Select a day</h3>
+                                <p>Click on a day to see transactions</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="calendar-container"></div>
             </div>
 
             <div class="chart-section">
@@ -817,28 +983,67 @@
             renderCalendar();
         }
 
-        function showDaySales(dateStr) {
-            const sales = salesByDate[dateStr] || [];
-            if (sales.length === 0) {
-                alert('No sales on this date');
-                return;
-            }
+        let selectedDate = null;
 
-            let message = `Sales on ${new Date(dateStr).toLocaleDateString('id-ID', {
+        function showDaySales(dateStr) {
+            selectedDate = dateStr;
+
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                day.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            const sales = salesByDate[dateStr] || [];
+            const detailsContainer = document.getElementById('day-details');
+
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('id-ID', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            })}:\n\n`;
-
-            sales.forEach((sale, index) => {
-                message += `${index + 1}. ${sale.couple_names} - ${sale.template_name}\n`;
-                message += `   Rp ${(sale.price || 0).toLocaleString('id-ID')}\n`;
-                if (sale.notes) message += `   ${sale.notes}\n`;
-                message += `\n`;
             });
 
-            alert(message);
+            if (sales.length === 0) {
+                detailsContainer.innerHTML = `
+                    <div class="day-detail-header">
+                        <h3>${formattedDate}</h3>
+                        <div class="date-info">No sales on this date</div>
+                    </div>
+                    <div class="empty-state" style="min-height: 300px;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p style="margin-top: 15px;">No transactions recorded</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalRevenue = sales.reduce((sum, sale) => sum + (parseFloat(sale.price) || 0), 0);
+
+            let salesHtml = sales.map(sale => `
+                <div class="sale-item">
+                    <div class="sale-item-header">
+                        <h4>${sale.couple_names}</h4>
+                        <div class="price">Rp ${(sale.price || 0).toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="template-badge">${sale.template_name}</div>
+                    ${sale.notes ? `<div class="notes">${sale.notes}</div>` : ''}
+                </div>
+            `).join('');
+
+            detailsContainer.innerHTML = `
+                <div class="day-detail-header">
+                    <h3>${formattedDate}</h3>
+                    <div class="date-info">${sales.length} sale${sales.length > 1 ? 's' : ''} • Total: Rp ${totalRevenue.toLocaleString('id-ID')}</div>
+                </div>
+                <div style="max-height: 450px; overflow-y: auto;">
+                    ${salesHtml}
+                </div>
+            `;
         }
 
         function renderSalesTable() {
