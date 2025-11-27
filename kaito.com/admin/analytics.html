@@ -6,6 +6,7 @@
     <title>Sales Analytics - Wedding Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
     <style>
         * {
             margin: 0;
@@ -428,38 +429,62 @@
             background: #fc8181;
         }
 
-        .feature-card {
+        .overview-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
             background: white;
-            padding: 20px;
+            padding: 20px 24px;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
-            transition: all 0.3s;
-            text-align: center;
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            border-color: #4299e1;
-        }
-
-        .feature-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-
-        .feature-card h3 {
-            color: #2d3748;
-            font-size: 18px;
+        .metric-label {
+            color: #718096;
+            font-size: 13px;
+            font-weight: 500;
             margin-bottom: 10px;
+        }
+
+        .metric-value {
+            color: #1a202c;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .metric-trend {
+            color: #48bb78;
+            font-size: 13px;
             font-weight: 600;
         }
 
-        .feature-card p {
-            color: #718096;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 0;
+        .metric-trend.negative {
+            color: #f56565;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 400px;
+        }
+
+        @media (max-width: 1024px) {
+            .overview-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .overview-metrics {
+                grid-template-columns: 1fr;
+            }
         }
 
         .calendar-right {
@@ -659,38 +684,31 @@
             </div>
 
             <div class="chart-section">
-                <h2 style="margin-bottom: 20px;">📋 Sales Features</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Sales Tracking</h3>
-                        <p>Monitor all your wedding template sales in real-time with automatic updates from completed orders</p>
+                <div class="overview-metrics">
+                    <div class="metric-card">
+                        <div class="metric-label">Sales Count</div>
+                        <div class="metric-value" id="metric-sales-count">0</div>
+                        <div class="metric-trend" id="metric-sales-trend">+0%</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📅</div>
-                        <h3>Calendar View</h3>
-                        <p>Visualize sales by date with color-coded badges showing daily transaction volumes</p>
+                    <div class="metric-card">
+                        <div class="metric-label">Avg / sale</div>
+                        <div class="metric-value" id="metric-avg-sale">Rp 0</div>
+                        <div class="metric-trend" id="metric-avg-trend">+0%</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">💰</div>
-                        <h3>Revenue Analytics</h3>
-                        <p>Track total revenue, template performance, and sales trends over time</p>
+                    <div class="metric-card">
+                        <div class="metric-label">Income</div>
+                        <div class="metric-value" id="metric-income">Rp 0</div>
+                        <div class="metric-trend" id="metric-income-trend">+0%</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📝</div>
-                        <h3>Manual Entry</h3>
-                        <p>Add manual sales entries for offline transactions or special deals</p>
+                    <div class="metric-card">
+                        <div class="metric-label">Total</div>
+                        <div class="metric-value" id="metric-total">Rp 0</div>
+                        <div class="metric-trend" id="metric-total-trend">+0%</div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🎨</div>
-                        <h3>Template Comparison</h3>
-                        <p>Compare sales performance between Timeless and Elegant templates</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📈</div>
-                        <h3>Growth Insights</h3>
-                        <p>Analyze sales patterns and identify peak periods for better planning</p>
-                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="sales-chart"></canvas>
                 </div>
             </div>
 
@@ -875,6 +893,8 @@
                 console.log('========================');
 
                 updateStats();
+                updateMetrics();
+                renderChart();
                 renderCalendar();
                 renderSalesTable();
 
@@ -900,6 +920,174 @@
             document.getElementById('stat-revenue').textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
             document.getElementById('stat-timeless').textContent = timelessSales;
             document.getElementById('stat-elegant').textContent = elegantSales;
+        }
+
+        function updateMetrics() {
+            const now = new Date();
+            const thisMonth = now.getMonth();
+            const thisYear = now.getFullYear();
+            const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+            const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+
+            const thisMonthSales = allSales.filter(sale => {
+                const saleDate = new Date(sale.sale_date);
+                return saleDate.getMonth() === thisMonth && saleDate.getFullYear() === thisYear;
+            });
+
+            const lastMonthSales = allSales.filter(sale => {
+                const saleDate = new Date(sale.sale_date);
+                return saleDate.getMonth() === lastMonth && saleDate.getFullYear() === lastMonthYear;
+            });
+
+            const thisMonthCount = thisMonthSales.length;
+            const lastMonthCount = lastMonthSales.length;
+            const thisMonthRevenue = thisMonthSales.reduce((sum, sale) => sum + parseFloat(sale.price || 0), 0);
+            const lastMonthRevenue = lastMonthSales.reduce((sum, sale) => sum + parseFloat(sale.price || 0), 0);
+            const avgThisMonth = thisMonthCount > 0 ? thisMonthRevenue / thisMonthCount : 0;
+            const avgLastMonth = lastMonthCount > 0 ? lastMonthRevenue / lastMonthCount : 0;
+
+            const countTrend = lastMonthCount > 0 ? ((thisMonthCount - lastMonthCount) / lastMonthCount * 100).toFixed(0) : 0;
+            const avgTrend = avgLastMonth > 0 ? ((avgThisMonth - avgLastMonth) / avgLastMonth * 100).toFixed(0) : 0;
+            const revenueTrend = lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue * 100).toFixed(0) : 0;
+            const totalRevenue = allSales.reduce((sum, sale) => sum + parseFloat(sale.price || 0), 0);
+
+            document.getElementById('metric-sales-count').textContent = thisMonthCount;
+            document.getElementById('metric-sales-trend').textContent = `${countTrend >= 0 ? '+' : ''}${countTrend}%`;
+            document.getElementById('metric-sales-trend').className = countTrend >= 0 ? 'metric-trend' : 'metric-trend negative';
+
+            document.getElementById('metric-avg-sale').textContent = avgThisMonth > 0 ? `Rp ${Math.round(avgThisMonth).toLocaleString('id-ID')}` : 'Rp 0';
+            document.getElementById('metric-avg-trend').textContent = `${avgTrend >= 0 ? '+' : ''}${avgTrend}%`;
+            document.getElementById('metric-avg-trend').className = avgTrend >= 0 ? 'metric-trend' : 'metric-trend negative';
+
+            document.getElementById('metric-income').textContent = `Rp ${Math.round(thisMonthRevenue).toLocaleString('id-ID')}`;
+            document.getElementById('metric-income-trend').textContent = `${revenueTrend >= 0 ? '+' : ''}${revenueTrend}%`;
+            document.getElementById('metric-income-trend').className = revenueTrend >= 0 ? 'metric-trend' : 'metric-trend negative';
+
+            document.getElementById('metric-total').textContent = `Rp ${Math.round(totalRevenue).toLocaleString('id-ID')}`;
+            document.getElementById('metric-total-trend').textContent = `All time`;
+            document.getElementById('metric-total-trend').className = 'metric-trend';
+        }
+
+        let salesChart = null;
+
+        function renderChart() {
+            const ctx = document.getElementById('sales-chart');
+            if (!ctx) return;
+
+            const now = new Date();
+            const monthsData = [];
+            const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            for (let i = 0; i < 12; i++) {
+                const monthDate = new Date(now.getFullYear(), i, 1);
+                const monthSales = allSales.filter(sale => {
+                    const saleDate = new Date(sale.sale_date);
+                    return saleDate.getMonth() === i && saleDate.getFullYear() === now.getFullYear();
+                });
+
+                const revenue = monthSales.reduce((sum, sale) => sum + parseFloat(sale.price || 0), 0);
+                const count = monthSales.length;
+
+                monthsData.push({
+                    month: monthLabels[i],
+                    revenue: revenue,
+                    count: count
+                });
+            }
+
+            if (salesChart) {
+                salesChart.destroy();
+            }
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthsData.map(d => d.month),
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: monthsData.map(d => d.revenue / 1000),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Sales Count',
+                            data: monthsData.map(d => d.count),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1a202c',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return 'Revenue: Rp ' + (context.parsed.y * 1000).toLocaleString('id-ID');
+                                    } else {
+                                        return 'Sales: ' + context.parsed.y;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f3f4f6',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            });
         }
 
         function renderCalendar() {
