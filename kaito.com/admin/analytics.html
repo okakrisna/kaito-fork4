@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Analytics - Wedding Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -288,6 +287,102 @@
                 padding: 8px;
             }
         }
+
+        .calendar-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 8px 16px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-nav:hover {
+            background: #3182ce;
+        }
+
+        #calendar-container {
+            padding: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 10px;
+            background: #edf2f7;
+            border-radius: 6px;
+            color: #2d3748;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: white;
+        }
+
+        .calendar-day:hover {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #4299e1;
+            background: #ebf8ff;
+        }
+
+        .calendar-day .date-number {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .calendar-day .sales-badge {
+            background: #48bb78;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .calendar-day .sales-badge.multiple {
+            background: #f6ad55;
+        }
+
+        .calendar-day .sales-badge.many {
+            background: #fc8181;
+        }
     </style>
 </head>
 <body>
@@ -350,31 +445,16 @@
 
             <div class="chart-section">
                 <div class="chart-header">
-                    <h2>Sales Over Time</h2>
-                    <div class="date-filters">
-                        <label>From:</label>
-                        <input type="date" id="date-from" onchange="applyDateFilter()">
-                        <label>To:</label>
-                        <input type="date" id="date-to" onchange="applyDateFilter()">
-                        <select id="chart-type" onchange="updateChartType()">
-                            <option value="line">Line Chart</option>
-                            <option value="bar">Bar Chart</option>
-                        </select>
+                    <h2>Sales Calendar</h2>
+                    <div class="calendar-nav">
+                        <button class="btn-nav" onclick="previousMonth()">&larr; Previous</button>
+                        <span id="current-month" style="font-weight: 600; font-size: 16px;"></span>
+                        <button class="btn-nav" onclick="nextMonth()">Next &rarr;</button>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="salesChart"></canvas>
-                </div>
+                <div id="calendar-container"></div>
             </div>
 
-            <div class="chart-section">
-                <div class="chart-header">
-                    <h2>Sales by Template</h2>
-                </div>
-                <div class="chart-container" style="height: 300px;">
-                    <canvas id="templateChart"></canvas>
-                </div>
-            </div>
 
             <div class="sales-table">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -448,8 +528,8 @@
 
         let allSales = [];
         let filteredSales = [];
-        let salesChart = null;
-        let templateChart = null;
+        let currentDate = new Date();
+        let salesByDate = {};
 
         async function loadSales() {
             try {
@@ -557,7 +637,7 @@
                 console.log('========================');
 
                 updateStats();
-                renderCharts();
+                renderCalendar();
                 renderSalesTable();
 
                 document.getElementById('loading').style.display = 'none';
@@ -584,83 +664,109 @@
             document.getElementById('stat-elegant').textContent = elegantSales;
         }
 
-        function renderCharts() {
-            const salesByDate = {};
+        function renderCalendar() {
+            salesByDate = {};
             filteredSales.forEach(sale => {
                 const date = sale.sale_date;
-                salesByDate[date] = (salesByDate[date] || 0) + 1;
+                if (!salesByDate[date]) {
+                    salesByDate[date] = [];
+                }
+                salesByDate[date].push(sale);
             });
 
-            const dates = Object.keys(salesByDate).sort();
-            const counts = dates.map(date => salesByDate[date]);
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
 
-            const ctx1 = document.getElementById('salesChart');
-            if (salesChart) {
-                salesChart.destroy();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+
+            document.getElementById('current-month').textContent = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const prevLastDay = new Date(year, month, 0);
+
+            const firstDayOfWeek = firstDay.getDay();
+            const lastDateOfMonth = lastDay.getDate();
+            const prevLastDate = prevLastDay.getDate();
+
+            const container = document.getElementById('calendar-container');
+            let html = '<div class="calendar-grid">';
+
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                html += `<div class="calendar-header">${day}</div>`;
+            });
+
+            for (let i = firstDayOfWeek; i > 0; i--) {
+                const day = prevLastDate - i + 1;
+                html += `<div class="calendar-day other-month"><div class="date-number">${day}</div></div>`;
             }
 
-            const chartType = document.getElementById('chart-type').value;
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
 
-            salesChart = new Chart(ctx1, {
-                type: chartType,
-                data: {
-                    labels: dates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })),
-                    datasets: [{
-                        label: 'Sales',
-                        data: counts,
-                        borderColor: '#0ea5e9',
-                        backgroundColor: chartType === 'bar' ? '#0ea5e9' : 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: chartType === 'line'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
+            for (let day = 1; day <= lastDateOfMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const sales = salesByDate[dateStr] || [];
+                const salesCount = sales.length;
 
-            const timelessCount = filteredSales.filter(s => s.template_name === 'timeless').length;
-            const elegantCount = filteredSales.filter(s => s.template_name === 'elegant').length;
+                let badgeClass = '';
+                if (salesCount >= 3) badgeClass = 'many';
+                else if (salesCount >= 2) badgeClass = 'multiple';
 
-            const ctx2 = document.getElementById('templateChart');
-            if (templateChart) {
-                templateChart.destroy();
+                const isToday = isCurrentMonth && today.getDate() === day;
+                const todayClass = isToday ? 'today' : '';
+
+                html += `<div class="calendar-day ${todayClass}" onclick="showDaySales('${dateStr}')">
+                    <div class="date-number">${day}</div>
+                    ${salesCount > 0 ? `<div class="sales-badge ${badgeClass}">${salesCount} sale${salesCount > 1 ? 's' : ''}</div>` : ''}
+                </div>`;
             }
 
-            templateChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Timeless', 'Elegant'],
-                    datasets: [{
-                        data: [timelessCount, elegantCount],
-                        backgroundColor: ['#0ea5e9', '#f5576c'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
+            const remainingDays = 7 - ((firstDayOfWeek + lastDateOfMonth) % 7);
+            if (remainingDays < 7) {
+                for (let day = 1; day <= remainingDays; day++) {
+                    html += `<div class="calendar-day other-month"><div class="date-number">${day}</div></div>`;
                 }
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function showDaySales(dateStr) {
+            const sales = salesByDate[dateStr] || [];
+            if (sales.length === 0) {
+                alert('No sales on this date');
+                return;
+            }
+
+            let message = `Sales on ${new Date(dateStr).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}:\n\n`;
+
+            sales.forEach((sale, index) => {
+                message += `${index + 1}. ${sale.couple_names} - ${sale.template_name}\n`;
+                message += `   Rp ${(sale.price || 0).toLocaleString('id-ID')}\n`;
+                if (sale.notes) message += `   ${sale.notes}\n`;
+                message += `\n`;
             });
+
+            alert(message);
         }
 
         function renderSalesTable() {
@@ -717,7 +823,7 @@
                 default:
                     filteredSales = allSales;
                     updateStats();
-                    renderCharts();
+                    renderCalendar();
                     renderSalesTable();
                     return;
             }
@@ -728,7 +834,7 @@
             });
 
             updateStats();
-            renderCharts();
+            renderCalendar();
             renderSalesTable();
         }
 
@@ -752,7 +858,7 @@
             });
 
             updateStats();
-            renderCharts();
+            renderCalendar();
             renderSalesTable();
         }
 
@@ -766,12 +872,8 @@
             }
 
             updateStats();
-            renderCharts();
+            renderCalendar();
             renderSalesTable();
-        }
-
-        function updateChartType() {
-            renderCharts();
         }
 
         function openAddSaleModal() {
